@@ -128,8 +128,7 @@ Vector3 CoordinatViewer::positionOnSphere(const Vector2i& position)
 
 void TexturedDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) 
 {
-    auto lightPos = mSceneLightObj->absoluteTransformation() * Vector4{0.0f, 0.0f, 0.0f, 1.0f};
-    lightPos.w() = 0.0f;
+    auto lightPos = mSceneLightObj->transformation().translation();
     mShader
     .setLightPositions({
         lightPos
