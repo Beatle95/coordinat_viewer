@@ -8,9 +8,10 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
         .setWindowFlags(Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Resizable)}
 {
     /* Every scene needs a camera */
+    Vector3 cameraPos{0.0f, 0.0f, 20.0f};
     mCameraObject
         .setParent(&mScene)
-        .translate(Vector3{0.0f, 0.0f, 20.0f});
+        .transform(Matrix4::lookAt(cameraPos, Vector3{0.0f, 0.0f, 0.0f}, Vector3{0.0f, 1.0f, 0.0f}));
     mCamera = new SceneGraph::Camera3D{mCameraObject};
     (*mCamera)
         .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
@@ -26,8 +27,10 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
     GL::Renderer::setClearColor(0x050505_rgbf);
-    mTextureShader.setAmbientColor(0x111111_rgbf)
-        .setSpecularColor(0x777777_rgbf)
+    mTextureShader
+        .setAmbientColor(0x111111_rgbf)
+        .setDiffuseColor(0x999999_rgbf)
+        .setSpecularColor(0x333333_rgbf)
         .setShininess(80.0f);
 
     PluginManager::Manager<Trade::AbstractImporter> manager;
