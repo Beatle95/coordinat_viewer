@@ -17,8 +17,7 @@ find_package(
     Trade
     Shaders
     SceneGraph
-    Sdl2Application 
-    AnyImageImporter
+    Sdl2Application
     AnySceneImporter
 )
 find_package(MagnumPlugins REQUIRED)
@@ -43,7 +42,6 @@ target_link_libraries(
     Magnum::SceneGraph
     Magnum::Shaders
     Magnum::Trade
-    Magnum::AnyImageImporter
     Magnum::AnySceneImporter
 )
 
