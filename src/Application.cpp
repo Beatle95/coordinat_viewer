@@ -62,8 +62,9 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
         .setStorage(1, GL::textureFormat(image->format()), image->size())
         .setSubImage(0, {}, *image);
 
-    auto* object = new Object3D(&mManimpulator);
-    new TexturedDrawable(*object, mTextureShader, mEarthMesh, mEarthTexture, mDrawables, mSceneLightObj);
+    mEarthObj = new Object3D(&mManimpulator);
+    new TexturedDrawable(*mEarthObj, mTextureShader, mEarthMesh, mEarthTexture, mDrawables, mSceneLightObj);
+    mEarthObj->rotateX(Magnum::Deg(-90.0f));
 }
 
 void CoordinatViewer::drawEvent() 
@@ -92,7 +93,7 @@ void CoordinatViewer::mouseMoveEvent(MouseMoveEvent& event)
     const Vector3 currentPosition = positionOnSphere(event.position());
     const Vector3 axis = Math::cross(mPreviousPosition, currentPosition);
 
-    //if(mPreviousPosition.length() < 0.001f || axis.length() < 0.001f) return;
+    if(mPreviousPosition.length() < 0.001f || axis.length() < 0.001f) return;
 
     mManimpulator.rotate(Math::angle(mPreviousPosition, currentPosition), axis.normalized());
     mPreviousPosition = currentPosition;

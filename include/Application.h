@@ -54,10 +54,10 @@ private:
 
     Scene3D mScene;
     Object3D mManimpulator, mCameraObject;
-    SceneGraph::Camera3D* mCamera;
+    SceneGraph::Camera3D *mCamera;
     SceneGraph::DrawableGroup3D mDrawables;
     Vector3 mPreviousPosition;
-    Object3D* mSceneLightObj;
+    Object3D *mSceneLightObj, *mEarthObj;
 };
 
 class TexturedDrawable: public SceneGraph::Drawable3D 
@@ -82,5 +82,5 @@ private:
     Shaders::PhongGL& mShader;
     GL::Mesh& mMesh;
     GL::Texture2D& mTexture;
-    Object3D* mSceneLightObj;
+    Object3D *mSceneLightObj;
 };
