@@ -44,6 +44,7 @@ private:
     void mouseReleaseEvent(MouseEvent& event) override;
     void mouseMoveEvent(MouseMoveEvent& event) override;
     void viewportEvent(ViewportEvent& event) override;
+    void mouseScrollEvent(MouseScrollEvent& event) override;
 
     Vector3 positionOnSphere(const Vector2i& position);
 

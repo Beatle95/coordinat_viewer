@@ -25,6 +25,7 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
     // set renderer and shader defaults
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
+    GL::Renderer::setClearColor(0x050505_rgbf);
     mTextureShader.setAmbientColor(0x111111_rgbf)
         .setSpecularColor(0x777777_rgbf)
         .setShininess(80.0f);
@@ -105,6 +106,17 @@ void CoordinatViewer::viewportEvent(ViewportEvent& event)
     mCamera->setViewport(event.windowSize());
 }
 
+void CoordinatViewer::mouseScrollEvent(MouseScrollEvent& event) 
+{
+    if(!event.offset().y()) return;
+    /* Distance to origin */
+    const Float distance = mCameraObject.transformation().translation().z();
+    /* Move 15% of the distance back or forward */
+    mCameraObject.translate(Vector3::zAxis(
+        distance*(1.0f - (event.offset().y() > 0 ? 1/0.85f : 0.85f))));
+    redraw();
+}
+
 Vector3 CoordinatViewer::positionOnSphere(const Vector2i& position) 
 {
     const Vector2 positionNormalized = Vector2{position}/Vector2{mCamera->viewport()} - Vector2{0.5f};
@@ -115,7 +127,8 @@ Vector3 CoordinatViewer::positionOnSphere(const Vector2i& position)
 
 void TexturedDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) 
 {
-    auto lightPos = mSceneLightObj->absoluteTransformation() * Vector4{0.0f, 10.0f, 10.0f, 0.0f};
+    auto lightPos = mSceneLightObj->absoluteTransformation() * Vector4{0.0f, 0.0f, 0.0f, 1.0f};
+    lightPos.w() = 0.0f;
     mShader
     .setLightPositions({
         lightPos
