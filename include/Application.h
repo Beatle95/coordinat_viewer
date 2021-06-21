@@ -10,7 +10,6 @@
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/Platform/Sdl2Application.h>
-#include <Magnum/Primitives/Cube.h>
 #include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Trade/AbstractImporter.h>
@@ -25,7 +24,13 @@
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
 
-#define LOADING_ERROR 1
+#include "TexturedDrawable.h"
+
+#define LOADING_ERROR   1
+#define SCROLL_DELTA    2.5f
+#define MIN_ZOOM_IN     5.0f
+#define MAX_ZOOM_OUT    20.0f
+#define ROTATION_RATIO  0.5f
     
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
@@ -43,10 +48,10 @@ private:
     void mousePressEvent(MouseEvent& event) override;
     void mouseReleaseEvent(MouseEvent& event) override;
     void mouseMoveEvent(MouseMoveEvent& event) override;
-    void viewportEvent(ViewportEvent& event) override;
     void mouseScrollEvent(MouseScrollEvent& event) override;
+    void viewportEvent(ViewportEvent& event) override;
 
-    Vector3 positionOnSphere(const Vector2i& position);
+    void placeCamera();
 
     GL::Mesh mEarthMesh;
     GL::Texture2D mEarthTexture;
@@ -54,33 +59,10 @@ private:
 
     Scene3D mScene;
     Object3D mManimpulator, mCameraObject;
+    Object3D *mSceneLightObj, *mEarthObj;
     SceneGraph::Camera3D *mCamera;
     SceneGraph::DrawableGroup3D mDrawables;
-    Vector3 mPreviousPosition;
-    Object3D *mSceneLightObj, *mEarthObj;
-};
+    Vector2i mPreviousPosition;
 
-class TexturedDrawable: public SceneGraph::Drawable3D 
-{
-public:
-    explicit TexturedDrawable(
-        Object3D& object, 
-        Shaders::PhongGL& shader, 
-        GL::Mesh& mesh, 
-        GL::Texture2D& texture, 
-        SceneGraph::DrawableGroup3D& group,
-        Object3D* sceneLightObj)
-        : SceneGraph::Drawable3D{object, &group}, 
-        mShader(shader), 
-        mMesh(mesh), 
-        mTexture(texture),
-        mSceneLightObj(sceneLightObj) {}
-
-private:
-    void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
-
-    Shaders::PhongGL& mShader;
-    GL::Mesh& mMesh;
-    GL::Texture2D& mTexture;
-    Object3D *mSceneLightObj;
+    float mCameraHorizontalAngle = 0.0f, mCameraVerticalAngle = 90.0f, mCameraDistance = 10.0f;
 };

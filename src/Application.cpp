@@ -8,7 +8,7 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
         .setWindowFlags(Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Resizable)}
 {
     /* Every scene needs a camera */
-    Vector3 cameraPos{0.0f, 0.0f, 20.0f};
+    Vector3 cameraPos{0.0f, 0.0f, mCameraDistance};
     mCameraObject
         .setParent(&mScene)
         .transform(Matrix4::lookAt(cameraPos, Vector3{0.0f, 0.0f, 0.0f}, Vector3{0.0f, 1.0f, 0.0f}));
@@ -80,27 +80,49 @@ void CoordinatViewer::drawEvent()
 void CoordinatViewer::mousePressEvent(MouseEvent& event) 
 {
     if(event.button() != MouseEvent::Button::Left)
-        mPreviousPosition = positionOnSphere(event.position());
+        mPreviousPosition = event.position();
 }
 
 void CoordinatViewer::mouseReleaseEvent(MouseEvent& event) 
 {
     if(event.button() != MouseEvent::Button::Left)
-        mPreviousPosition = Vector3();
+        mPreviousPosition = Vector2i();
 }
 
 void CoordinatViewer::mouseMoveEvent(MouseMoveEvent& event) 
 {
     if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
 
-    const Vector3 currentPosition = positionOnSphere(event.position());
-    const Vector3 axis = Math::cross(mPreviousPosition, currentPosition);
+    auto currentPosition = event.position();
+    float horAngle = (currentPosition.x() - mPreviousPosition.x()) * ROTATION_RATIO;
+    float verAngle = (currentPosition.y() - mPreviousPosition.y()) * ROTATION_RATIO;
 
-    if(mPreviousPosition.length() < 0.001f || axis.length() < 0.001f) return;
+    auto newAngle = mCameraHorizontalAngle - horAngle;
+    if (newAngle > 360.0f)
+        newAngle -= 360.0f;
+    if (newAngle < -360.0f)
+        newAngle += 360.0f;
+    mCameraHorizontalAngle = newAngle;
 
-    mManimpulator.rotate(Math::angle(mPreviousPosition, currentPosition), axis.normalized());
+    newAngle = mCameraVerticalAngle - verAngle;
+    if (newAngle > 10.0f && newAngle < 170.0f)
+        mCameraVerticalAngle -= verAngle;
+
     mPreviousPosition = currentPosition;
+    placeCamera();
+    redraw();
+}
 
+void CoordinatViewer::mouseScrollEvent(MouseScrollEvent& event) 
+{
+    if(!event.offset().y()) return;
+    /* Distance to origin */
+    const Float distance = mCameraObject.transformation().translation().z();
+    /* Move 15% of the distance back or forward */
+    float offset = (event.offset().y() < 0 ? SCROLL_DELTA : -SCROLL_DELTA);
+    if (mCameraDistance + offset > MIN_ZOOM_IN || mCameraDistance + offset < MAX_ZOOM_OUT)
+        mCameraDistance += offset;
+    placeCamera();
     redraw();
 }
 
@@ -110,35 +132,11 @@ void CoordinatViewer::viewportEvent(ViewportEvent& event)
     mCamera->setViewport(event.windowSize());
 }
 
-void CoordinatViewer::mouseScrollEvent(MouseScrollEvent& event) 
+void CoordinatViewer::placeCamera() 
 {
-    if(!event.offset().y()) return;
-    /* Distance to origin */
-    const Float distance = mCameraObject.transformation().translation().z();
-    /* Move 15% of the distance back or forward */
-    mCameraObject.translate(Vector3::zAxis(
-        distance*(1.0f - (event.offset().y() > 0 ? 1/0.85f : 0.85f))));
-    redraw();
-}
-
-Vector3 CoordinatViewer::positionOnSphere(const Vector2i& position) 
-{
-    const Vector2 positionNormalized = Vector2{position}/Vector2{mCamera->viewport()} - Vector2{0.5f};
-    const Float length = positionNormalized.length();
-    const Vector3 result(length > 1.0f ? Vector3(positionNormalized, 0.0f) : Vector3(positionNormalized, 1.0f - length));
-    return (result*Vector3::yScale(-1.0f)).normalized();
-}
-
-void TexturedDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) 
-{
-    auto lightPos = mSceneLightObj->transformation().translation();
-    mShader
-    .setLightPositions({
-        lightPos
-    })
-    .setTransformationMatrix(transformationMatrix)
-    .setNormalMatrix(transformationMatrix.normalMatrix())
-    .setProjectionMatrix(camera.projectionMatrix())
-    .bindDiffuseTexture(mTexture)
-    .draw(mMesh);
+    Vector3 cameraPos;
+    cameraPos.x() = mCameraDistance * sin(Deg(mCameraVerticalAngle)) * sin(Deg(mCameraHorizontalAngle));
+    cameraPos.y() = mCameraDistance * cos(Deg(mCameraVerticalAngle));
+    cameraPos.z() = mCameraDistance * sin(Deg(mCameraVerticalAngle)) * cos(Deg(mCameraHorizontalAngle));
+    mCameraObject.setTransformation(Matrix4::lookAt(cameraPos, Vector3{0.0f, 0.0f, 0.0f}, Vector3{0.0f, 1.0f, 0.0f}));
 }
