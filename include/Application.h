@@ -24,6 +24,7 @@
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <imgui.h>
+#include <Magnum/ImGuiIntegration/Context.hpp>
 
 #include "TexturedDrawable.h"
 
@@ -53,6 +54,8 @@ private:
     void viewportEvent(ViewportEvent& event) override;
 
     void placeCamera();
+
+    ImGuiIntegration::Context mImgui{NoCreate};
 
     GL::Mesh mEarthMesh;
     GL::Texture2D mEarthTexture;
