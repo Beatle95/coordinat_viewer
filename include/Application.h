@@ -30,7 +30,7 @@
 #define SCROLL_DELTA    2.5f
 #define MIN_ZOOM_IN     5.0f
 #define MAX_ZOOM_OUT    20.0f
-#define ROTATION_RATIO  0.5f
+#define ROTATION_RATIO  0.25f
     
 using namespace Magnum;
 using namespace Magnum::Math::Literals;

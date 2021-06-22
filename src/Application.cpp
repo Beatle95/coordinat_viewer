@@ -79,13 +79,13 @@ void CoordinatViewer::drawEvent()
 
 void CoordinatViewer::mousePressEvent(MouseEvent& event) 
 {
-    if(event.button() != MouseEvent::Button::Left)
+    if(event.button() == MouseEvent::Button::Left)
         mPreviousPosition = event.position();
 }
 
 void CoordinatViewer::mouseReleaseEvent(MouseEvent& event) 
 {
-    if(event.button() != MouseEvent::Button::Left)
+    if(event.button() == MouseEvent::Button::Left)
         mPreviousPosition = Vector2i();
 }
 
