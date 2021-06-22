@@ -21,6 +21,9 @@ find_package(
     AnySceneImporter
 )
 find_package(MagnumPlugins REQUIRED)
+find_package(MagnumIntegration REQUIRED ImGui)
+find_package(imgui REQUIRED)
+
 
 add_executable (coordinat_viewer ${SRC})
 
@@ -30,6 +33,8 @@ target_include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${MAGNUM_INCLUDE_DIR}
     ${CORRADE_INCLUDE_DIR}
+    ${MAGNUMINTEGRATION_INCLUDE_DIR}
+    imgui::imgui
 )
 
 target_link_libraries(
@@ -43,6 +48,18 @@ target_link_libraries(
     Magnum::Shaders
     Magnum::Trade
     Magnum::AnySceneImporter
+    ${MAGNUMINTEGRATION_IMGUI_LIBRARY_RELEASE}          # some problems with imgui, so adding by hand
+    imgui::imgui
+)
+
+# copy runtime of the manually added libraries
+file(
+    COPY d:/lib/vcpkg/installed/x64-windows/bin/MagnumImGuiIntegration.dll
+    DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Debug/
+)
+file(
+    COPY d:/lib/vcpkg/installed/x64-windows/bin/MagnumImGuiIntegration.dll
+    DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Release/
 )
 
 # copy resources to output directories

@@ -23,6 +23,7 @@
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
+#include <imgui.h>
 
 #include "TexturedDrawable.h"
 
