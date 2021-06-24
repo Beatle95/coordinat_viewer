@@ -7,24 +7,7 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
         .setSize(Vector2i{800, 800})
         .setWindowFlags(Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Resizable)}
 {
-    {
-        ImGui::CreateContext();
-        mImgui = ImGuiIntegration::Context(*ImGui::GetCurrentContext(),
-            Vector2{windowSize()}/dpiScaling(), windowSize(), framebufferSize());
-
-        /* Set up proper blending to be used by ImGui. There's a great chance
-        you'll need this exact behavior for the rest of your scene. If not, set
-        this only for the drawFrame() call. */
-        GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add,
-            GL::Renderer::BlendEquation::Add);
-        GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::SourceAlpha,
-            GL::Renderer::BlendFunction::OneMinusSourceAlpha);
-
-        #if !defined(MAGNUM_TARGET_WEBGL) && !defined(CORRADE_TARGET_ANDROID)
-        /* Have some sane speed, please */
-        setMinimalLoopPeriod(16);
-        #endif
-    }
+    mImgui.init(this, windowSize(), dpiScaling(), framebufferSize());
     
     /* Every scene needs a camera */
     Vector3 cameraPos{0.0f, 0.0f, mCameraDistance};
@@ -96,37 +79,8 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
 void CoordinatViewer::drawEvent() 
 {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
-
-    mImgui.newFrame();
-
-    mCamera->draw(mDrawables);
-    
-    ImGui::Begin("Window", nullptr);
-    /* 1. Show a simple window.
-       Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appear in
-       a window called "Debug" automatically */
-    {
-        ImGui::Text("Hello, world!");
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-            1000.0/Double(ImGui::GetIO().Framerate), Double(ImGui::GetIO().Framerate));
-    }
-    ImGui::End();
-    /* Update application cursor */
-    mImgui.updateApplicationCursor(*this);
-    /* Set appropriate states. If you only draw ImGui, it is sufficient to
-       just enable blending and scissor test in the constructor. */
-    GL::Renderer::enable(GL::Renderer::Feature::Blending);
-    GL::Renderer::enable(GL::Renderer::Feature::ScissorTest);
-    GL::Renderer::disable(GL::Renderer::Feature::FaceCulling);
-    GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
-    mImgui.drawFrame();
-    /* Reset state. Only needed if you want to draw something else with
-       different state after. */
-    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
-    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
-    GL::Renderer::disable(GL::Renderer::Feature::ScissorTest);
-    GL::Renderer::disable(GL::Renderer::Feature::Blending);
-
+    mCamera->draw(mDrawables);    
+    mImgui.draw();
     swapBuffers();
 }
 
@@ -169,11 +123,9 @@ void CoordinatViewer::mouseMoveEvent(MouseMoveEvent& event)
 void CoordinatViewer::mouseScrollEvent(MouseScrollEvent& event) 
 {
     if(!event.offset().y()) return;
-    /* Distance to origin */
     const Float distance = mCameraObject.transformation().translation().z();
-    /* Move 15% of the distance back or forward */
     float offset = (event.offset().y() < 0 ? SCROLL_DELTA : -SCROLL_DELTA);
-    if (mCameraDistance + offset > MIN_ZOOM_IN || mCameraDistance + offset < MAX_ZOOM_OUT)
+    if (mCameraDistance + offset > MIN_ZOOM_IN && mCameraDistance + offset < MAX_ZOOM_OUT)
         mCameraDistance += offset;
     placeCamera();
     redraw();
@@ -183,8 +135,7 @@ void CoordinatViewer::viewportEvent(ViewportEvent& event)
 {    
     GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
     mCamera->setViewport(event.windowSize());
-    mImgui.relayout(Vector2{event.windowSize()}/event.dpiScaling(),
-        event.windowSize(), event.framebufferSize());
+    mImgui.viewportEvent(event);
 }
 
 void CoordinatViewer::placeCamera() 

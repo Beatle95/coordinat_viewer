@@ -23,17 +23,16 @@
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
-#include <imgui.h>
-#include <Magnum/ImGuiIntegration/Context.hpp>
 
 #include "TexturedDrawable.h"
+#include "ImGuiImpl.h"
 
 #define LOADING_ERROR   1
 #define SCROLL_DELTA    2.5f
 #define MIN_ZOOM_IN     5.0f
 #define MAX_ZOOM_OUT    20.0f
 #define ROTATION_RATIO  0.25f
-    
+
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
@@ -55,8 +54,7 @@ private:
 
     void placeCamera();
 
-    ImGuiIntegration::Context mImgui{NoCreate};
-
+    ImGuiImpl mImgui;
     GL::Mesh mEarthMesh;
     GL::Texture2D mEarthTexture;
     Shaders::PhongGL mTextureShader{Shaders::PhongGL::Flag::DiffuseTexture};
