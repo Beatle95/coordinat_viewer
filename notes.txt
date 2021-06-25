@@ -1,0 +1,4 @@
+vcpkg commands:
+magnum[anyimageimporter,anysceneimporter,objimporter,primitives,scenegraph,sdl2application,shaders,shadertools,text,trade] --head
+magnum-plugins[assimpimporter,pngimporter] --head
+magnum-integration[imgui] --head
