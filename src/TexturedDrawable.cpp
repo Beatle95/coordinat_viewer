@@ -13,6 +13,6 @@ void TexturedDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Cam
     .setTransformationMatrix(transformationMatrix)
     .setNormalMatrix(transformationMatrix.normalMatrix())
     .setProjectionMatrix(camera.projectionMatrix())
-    .bindDiffuseTexture(mTexture)
+    .bindTextures(&mTexture, &mTexture, &mTexture)
     .draw(mMesh);
 }

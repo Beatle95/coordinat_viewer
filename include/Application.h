@@ -57,7 +57,10 @@ private:
     ImGuiImpl mImgui;
     GL::Mesh mEarthMesh;
     GL::Texture2D mEarthTexture;
-    Shaders::PhongGL mTextureShader{Shaders::PhongGL::Flag::DiffuseTexture};
+    Shaders::PhongGL mTextureShader{
+        Shaders::PhongGL::Flag::DiffuseTexture 
+        | Shaders::PhongGL::Flag::AmbientTexture 
+        | Shaders::PhongGL::Flag::SpecularTexture};
 
     Scene3D mScene;
     Object3D mManimpulator, mCameraObject;

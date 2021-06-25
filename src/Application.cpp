@@ -23,17 +23,17 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
     /* Base object, parent of all (for easy manipulation) */
     mManimpulator.setParent(&mScene);
     mSceneLightObj = new Object3D(&mManimpulator);
-    mSceneLightObj->translate(Vector3{20.0f, 0.0f, 30.0f});
+    mSceneLightObj->translate(Vector3{0.0f, 0.0f, 30.0f});
 
     // set renderer and shader defaults
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
     GL::Renderer::setClearColor(0x050505_rgbf);
     mTextureShader
-        //.setAmbientColor(0x050505_rgbf)
-        .setDiffuseColor(0x999999_rgbf)
-        .setSpecularColor(0x333333_rgbf)
-        .setShininess(120.0f);
+        .setAmbientColor(0x606060_rgbf)
+        .setDiffuseColor(0xb0b0b0_rgbf)
+        .setSpecularColor(0x777777_rgbf)
+        .setShininess(200.0f);
 
     PluginManager::Manager<Trade::AbstractImporter> manager;
     auto assimpImporter = manager.loadAndInstantiate("AssimpImporter");
@@ -78,7 +78,7 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
 
 void CoordinatViewer::drawEvent() 
 {
-    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth);
     mCamera->draw(mDrawables);    
     mImgui.draw();
     swapBuffers();
