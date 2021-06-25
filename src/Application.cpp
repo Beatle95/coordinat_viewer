@@ -23,17 +23,17 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
     /* Base object, parent of all (for easy manipulation) */
     mManimpulator.setParent(&mScene);
     mSceneLightObj = new Object3D(&mManimpulator);
-    mSceneLightObj->translate(Vector3{0.0f, 0.0f, 30.0f});
+    mSceneLightObj->translate(Vector3{20.0f, 0.0f, 30.0f});
 
     // set renderer and shader defaults
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
     GL::Renderer::setClearColor(0x050505_rgbf);
     mTextureShader
-        .setAmbientColor(0x111111_rgbf)
+        //.setAmbientColor(0x050505_rgbf)
         .setDiffuseColor(0x999999_rgbf)
         .setSpecularColor(0x333333_rgbf)
-        .setShininess(80.0f);
+        .setShininess(120.0f);
 
     PluginManager::Manager<Trade::AbstractImporter> manager;
     auto assimpImporter = manager.loadAndInstantiate("AssimpImporter");
