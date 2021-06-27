@@ -29,6 +29,7 @@ void ImGuiImpl::draw()
     else if(!ImGui::GetIO().WantTextInput && mApplication->isTextInputActive())
         mApplication->stopTextInput();
     // draw light position window
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::Begin("Light positioning", nullptr);
     {
         ImGui::Text("Hello, world!");
