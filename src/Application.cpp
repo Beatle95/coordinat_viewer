@@ -82,6 +82,7 @@ void CoordinatViewer::drawEvent()
     mCamera->draw(mDrawables);    
     mImgui.draw();
     swapBuffers();
+    redraw();
 }
 
 void CoordinatViewer::mousePressEvent(MouseEvent& event) 
