@@ -190,7 +190,7 @@ void CoordinatViewer::placeLightTimeBased(const std::chrono::system_clock::time_
 {
     time_t tt = std::chrono::system_clock::to_time_t(time_point);
     tm utc_time = *gmtime(&tt);
-    float minutesInCurDay = utc_time.tm_hour * utc_time.tm_min;
+    float minutesInCurDay = utc_time.tm_hour * 60 + utc_time.tm_min;
     float lightAmgle = mapZeroBased(60 * 24, 360.0f, minutesInCurDay) - 180.0f;
     mSceneLightObj->translate(fromPolarCoordinates(-lightAmgle, LIGHT_VERTICAL_ANGLE, LIGHT_DISTANCE));
 }
