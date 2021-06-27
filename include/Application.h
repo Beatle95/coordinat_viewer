@@ -61,10 +61,10 @@ private:
     void viewportEvent(ViewportEvent& event) override;
 
     void placeCamera();
-    void placeLightTimeBased();
+    void placeLightTimeBased(const std::chrono::system_clock::time_point& time_point);
 
-    static Vector3 fromPolarCoordinates(float phi, float theta, float r);
-    static float mapZeroBased(float fromMax, float toMax, float value);
+    static Vector3 fromPolarCoordinates(const float phi, const float theta, const float r);
+    static float mapZeroBased(const float fromMax, const float toMax, const float value);
 
     ImGuiImpl mImgui;
     GL::Mesh mEarthMesh;
@@ -84,6 +84,8 @@ private:
     float mCameraHorizontalAngle = 0.0f;
     float mCameraVerticalAngle = 90.0f;
     float mCameraDistance = 10.0f;
-    float mLightAngle = 0.0f;
+
+    bool mIsLightPosRealTimeBased = true;
+    std::chrono::system_clock::time_point mLightTime;
     std::chrono::steady_clock::time_point mLightCheckTimestamp;
 };

@@ -48,7 +48,8 @@ void CoordinatViewer::objectsInit()
 
     // place light on scene
     mLightCheckTimestamp = std::chrono::steady_clock::now();
-    placeLightTimeBased();
+    mLightTime = std::chrono::system_clock::now();
+    placeLightTimeBased(mLightTime);
 
     // initializing Eart object
     mEarthObj = new Object3D(&mManimpulator);
@@ -94,10 +95,11 @@ void CoordinatViewer::loadResources()
 void CoordinatViewer::drawEvent() 
 {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth);
-    if (std::chrono::steady_clock::now() - mLightCheckTimestamp > 20s){
+    if (mIsLightPosRealTimeBased && std::chrono::steady_clock::now() - mLightCheckTimestamp > 20s){
         mLightCheckTimestamp = std::chrono::steady_clock::now();
-        placeLightTimeBased();
+        mLightTime = std::chrono::system_clock::now();
     }
+    placeLightTimeBased(mLightTime);
     mCamera->draw(mDrawables);    
     mImgui.draw();
     swapBuffers();
@@ -162,16 +164,16 @@ void CoordinatViewer::placeCamera()
     mCameraObject.setTransformation(Matrix4::lookAt(pos, Vector3{0.0f, 0.0f, 0.0f}, Vector3{0.0f, 1.0f, 0.0f}));
 }
 
-void CoordinatViewer::placeLightTimeBased() 
+void CoordinatViewer::placeLightTimeBased(const std::chrono::system_clock::time_point& time_point) 
 {
-    time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    time_t tt = std::chrono::system_clock::to_time_t(time_point);
     tm utc_time = *gmtime(&tt);
     float minutesInCurDay = utc_time.tm_hour * utc_time.tm_min;
-    mLightAngle = mapZeroBased(60 * 24, 360.0f, minutesInCurDay);
-    mSceneLightObj->translate(fromPolarCoordinates(-mLightAngle, LIGHT_VERTICAL_ANGLE, LIGHT_DISTANCE));
+    float lightAmgle = mapZeroBased(60 * 24, 360.0f, minutesInCurDay) - 180.0f;
+    mSceneLightObj->translate(fromPolarCoordinates(-lightAmgle, LIGHT_VERTICAL_ANGLE, LIGHT_DISTANCE));
 }
 
-Vector3 CoordinatViewer::fromPolarCoordinates(float phi, float theta, float r) 
+Vector3 CoordinatViewer::fromPolarCoordinates(const float phi, const float theta, const float r) 
 {
     Vector3 pos;
     pos.x() = r * sin(Deg(theta)) * sin(Deg(phi));
@@ -180,7 +182,7 @@ Vector3 CoordinatViewer::fromPolarCoordinates(float phi, float theta, float r)
     return pos;
 }
 
-float CoordinatViewer::mapZeroBased(float fromMax, float toMax, float value) 
+float CoordinatViewer::mapZeroBased(const float fromMax, const float toMax, const float value) 
 {
     float result = 0.0f;
     result = value / fromMax * toMax;
