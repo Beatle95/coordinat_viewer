@@ -8,22 +8,6 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
         .setWindowFlags(Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Resizable)}
 {
     mImgui.init(this, windowSize(), dpiScaling(), framebufferSize());
-    
-    /* Every scene needs a camera */
-    Vector3 cameraPos{0.0f, 0.0f, mCameraDistance};
-    mCameraObject
-        .setParent(&mScene)
-        .transform(Matrix4::lookAt(cameraPos, Vector3{0.0f, 0.0f, 0.0f}, Vector3{0.0f, 1.0f, 0.0f}));
-    mCamera = new SceneGraph::Camera3D{mCameraObject};
-    (*mCamera)
-        .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.01f, 1000.0f))
-        .setViewport(GL::defaultFramebuffer.viewport().size());
-
-    /* Base object, parent of all (for easy manipulation) */
-    mManimpulator.setParent(&mScene);
-    mSceneLightObj = new Object3D(&mManimpulator);
-    mSceneLightObj->translate(Vector3{0.0f, 0.0f, 30.0f});
 
     // set renderer and shader defaults
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
@@ -34,6 +18,26 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
         .setDiffuseColor(0xb0b0b0_rgbf)
         .setSpecularColor(0x777777_rgbf)
         .setShininess(200.0f);
+    
+    /* Every scene needs a camera */
+    mCameraObject
+        .setParent(&mScene)
+        .transform(Matrix4::lookAt(fromPolarCoordinates(mCameraHorizontalAngle, mCameraVerticalAngle, mCameraDistance), 
+            Vector3{0.0f, 0.0f, 0.0f}, 
+            Vector3{0.0f, 1.0f, 0.0f}));
+    mCamera = new SceneGraph::Camera3D{mCameraObject};
+    (*mCamera)
+        .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
+        .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.01f, 1000.0f))
+        .setViewport(GL::defaultFramebuffer.viewport().size());
+
+    /* Base object, parent of all (for easy manipulation) */
+    mManimpulator.setParent(&mScene);
+    mSceneLightObj = new Object3D(&mManimpulator);
+
+    // place light on scene
+    mLightCheckTimestamp = std::chrono::steady_clock::now();
+    placeLightTimeBased();
 
     PluginManager::Manager<Trade::AbstractImporter> manager;
     auto assimpImporter = manager.loadAndInstantiate("AssimpImporter");
@@ -79,6 +83,10 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
 void CoordinatViewer::drawEvent() 
 {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth);
+    if (std::chrono::steady_clock::now() - mLightCheckTimestamp > 20s){
+        mLightCheckTimestamp = std::chrono::steady_clock::now();
+        placeLightTimeBased();
+    }
     mCamera->draw(mDrawables);    
     mImgui.draw();
     swapBuffers();
@@ -118,7 +126,6 @@ void CoordinatViewer::mouseMoveEvent(MouseMoveEvent& event)
 
     mPreviousPosition = currentPosition;
     placeCamera();
-    redraw();
 }
 
 void CoordinatViewer::mouseScrollEvent(MouseScrollEvent& event) 
@@ -129,7 +136,6 @@ void CoordinatViewer::mouseScrollEvent(MouseScrollEvent& event)
     if (mCameraDistance + offset > MIN_ZOOM_IN && mCameraDistance + offset < MAX_ZOOM_OUT)
         mCameraDistance += offset;
     placeCamera();
-    redraw();
 }
 
 void CoordinatViewer::viewportEvent(ViewportEvent& event) 
@@ -141,9 +147,31 @@ void CoordinatViewer::viewportEvent(ViewportEvent& event)
 
 void CoordinatViewer::placeCamera() 
 {
-    Vector3 cameraPos;
-    cameraPos.x() = mCameraDistance * sin(Deg(mCameraVerticalAngle)) * sin(Deg(mCameraHorizontalAngle));
-    cameraPos.y() = mCameraDistance * cos(Deg(mCameraVerticalAngle));
-    cameraPos.z() = mCameraDistance * sin(Deg(mCameraVerticalAngle)) * cos(Deg(mCameraHorizontalAngle));
-    mCameraObject.setTransformation(Matrix4::lookAt(cameraPos, Vector3{0.0f, 0.0f, 0.0f}, Vector3{0.0f, 1.0f, 0.0f}));
+    auto pos = fromPolarCoordinates(mCameraHorizontalAngle, mCameraVerticalAngle, mCameraDistance);
+    mCameraObject.setTransformation(Matrix4::lookAt(pos, Vector3{0.0f, 0.0f, 0.0f}, Vector3{0.0f, 1.0f, 0.0f}));
+}
+
+void CoordinatViewer::placeLightTimeBased() 
+{
+    time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    tm utc_time = *gmtime(&tt);
+    float minutesInCurDay = utc_time.tm_hour * utc_time.tm_min;
+    mLightAngle = mapZeroBased(60 * 24, 360.0f, minutesInCurDay);
+    mSceneLightObj->translate(fromPolarCoordinates(mLightAngle, LIGHT_VERTICAL_ANGLE, LIGHT_DISTANCE));
+}
+
+Vector3 CoordinatViewer::fromPolarCoordinates(float phi, float theta, float r) 
+{
+    Vector3 pos;
+    pos.x() = r * sin(Deg(theta)) * sin(Deg(phi));
+    pos.y() = r * cos(Deg(theta));
+    pos.z() = r * sin(Deg(theta)) * cos(Deg(phi));
+    return pos;
+}
+
+float CoordinatViewer::mapZeroBased(float fromMax, float toMax, float value) 
+{
+    float result = 0.0f;
+    result = value / fromMax * toMax;
+    return result;
 }

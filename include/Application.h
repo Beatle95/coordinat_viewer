@@ -24,17 +24,22 @@
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
 
+#include <chrono>
+
 #include "TexturedDrawable.h"
 #include "ImGuiImpl.h"
 
-#define LOADING_ERROR   1
-#define SCROLL_DELTA    2.5f
-#define MIN_ZOOM_IN     5.0f
-#define MAX_ZOOM_OUT    20.0f
-#define ROTATION_RATIO  0.125f
+#define LOADING_ERROR           1
+#define SCROLL_DELTA            2.5f
+#define MIN_ZOOM_IN             5.0f
+#define MAX_ZOOM_OUT            20.0f
+#define ROTATION_RATIO          0.125f
+#define LIGHT_DISTANCE          30.0f
+#define LIGHT_VERTICAL_ANGLE    90.0f
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
+using namespace std::chrono_literals;
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
@@ -53,6 +58,9 @@ private:
     void viewportEvent(ViewportEvent& event) override;
 
     void placeCamera();
+    void placeLightTimeBased();
+    static Vector3 fromPolarCoordinates(float phi, float theta, float r);
+    static float mapZeroBased(float fromMax, float toMax, float value);
 
     ImGuiImpl mImgui;
     GL::Mesh mEarthMesh;
@@ -69,5 +77,9 @@ private:
     SceneGraph::DrawableGroup3D mDrawables;
     Vector2i mPreviousPosition;
 
-    float mCameraHorizontalAngle = 0.0f, mCameraVerticalAngle = 90.0f, mCameraDistance = 10.0f;
+    float mCameraHorizontalAngle = 0.0f;
+    float mCameraVerticalAngle = 90.0f;
+    float mCameraDistance = 10.0f;
+    float mLightAngle = 0.0f;
+    std::chrono::steady_clock::time_point mLightCheckTimestamp;
 };
