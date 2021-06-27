@@ -65,7 +65,7 @@ private:
     ImGuiImpl mImgui;
     GL::Mesh mEarthMesh;
     GL::Texture2D mEarthTexture;
-    Shaders::PhongGL mTextureShader{
+    Shaders::PhongGL mEartShader{
         Shaders::PhongGL::Flag::DiffuseTexture 
         | Shaders::PhongGL::Flag::AmbientTexture 
         | Shaders::PhongGL::Flag::SpecularTexture};

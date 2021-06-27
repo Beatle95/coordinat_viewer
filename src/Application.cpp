@@ -13,8 +13,8 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
     GL::Renderer::setClearColor(0x050505_rgbf);
-    mTextureShader
-        .setAmbientColor(0x606060_rgbf)
+    mEartShader
+        .setAmbientColor(0x505050_rgbf)
         .setDiffuseColor(0xb0b0b0_rgbf)
         .setSpecularColor(0x777777_rgbf)
         .setShininess(200.0f);
@@ -72,7 +72,7 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
         .setSubImage(0, {}, *image);
 
     mEarthObj = new Object3D(&mManimpulator);
-    new TexturedDrawable(*mEarthObj, mTextureShader, mEarthMesh, mEarthTexture, mDrawables, mSceneLightObj);
+    new TexturedDrawable(*mEarthObj, mEartShader, mEarthMesh, mEarthTexture, mDrawables, mSceneLightObj);
     mEarthObj->rotateX(Magnum::Deg(-90.0f));
 
     /* Loop at 60 Hz max */
@@ -157,7 +157,7 @@ void CoordinatViewer::placeLightTimeBased()
     tm utc_time = *gmtime(&tt);
     float minutesInCurDay = utc_time.tm_hour * utc_time.tm_min;
     mLightAngle = mapZeroBased(60 * 24, 360.0f, minutesInCurDay);
-    mSceneLightObj->translate(fromPolarCoordinates(mLightAngle, LIGHT_VERTICAL_ANGLE, LIGHT_DISTANCE));
+    mSceneLightObj->translate(fromPolarCoordinates(-mLightAngle, LIGHT_VERTICAL_ANGLE, LIGHT_DISTANCE));
 }
 
 Vector3 CoordinatViewer::fromPolarCoordinates(float phi, float theta, float r) 
