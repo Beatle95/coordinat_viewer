@@ -50,6 +50,9 @@ public:
     explicit CoordinatViewer(const Arguments& arguments);
 
 private:
+    void objectsInit();
+    void loadResources();
+
     void drawEvent() override;
     void mousePressEvent(MouseEvent& event) override;
     void mouseReleaseEvent(MouseEvent& event) override;
@@ -59,6 +62,7 @@ private:
 
     void placeCamera();
     void placeLightTimeBased();
+
     static Vector3 fromPolarCoordinates(float phi, float theta, float r);
     static float mapZeroBased(float fromMax, float toMax, float value);
 
