@@ -12,7 +12,11 @@ using namespace Magnum;
 class ImGuiImpl
 {
 public:
-    void init(Platform::Application *application, Vector2i& windowSize, Vector2& dpiScaling, Vector2i& framebufferSize);
+    void init(
+        Platform::Application *application, 
+        const Vector2i& windowSize, 
+        const Vector2& dpiScaling, 
+        const Vector2i& framebufferSize);
     void draw();
     void viewportEvent(Platform::Application::ViewportEvent& event);
 private:

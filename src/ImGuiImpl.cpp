@@ -1,6 +1,10 @@
 #include "ImGuiImpl.h"
 
-void ImGuiImpl::init(Platform::Application *application, Vector2i& windowSize, Vector2& dpiScaling, Vector2i& framebufferSize) 
+void ImGuiImpl::init(
+    Platform::Application *application, 
+    const Vector2i& windowSize, 
+    const Vector2& dpiScaling, 
+    const Vector2i& framebufferSize) 
 {
     mApplication = application;
     ImGui::CreateContext();
