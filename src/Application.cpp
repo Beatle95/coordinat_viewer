@@ -21,6 +21,76 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
     setMinimalLoopPeriod(16);
 }
 
+void CoordinatViewer::objectsInit() 
+{
+    // set renderer and shader defaults
+    mEartShader
+        .setAmbientColor(0x505050_rgbf)
+        .setDiffuseColor(0xb0b0b0_rgbf)
+        .setSpecularColor(0x777777_rgbf)
+        .setShininess(200.0f);
+    
+    /* Every scene needs a camera */
+    mCameraObject
+        .setParent(&mScene)
+        .transform(Matrix4::lookAt(fromPolarCoordinates(mCameraHorizontalAngle, mCameraVerticalAngle, mCameraDistance), 
+            Vector3{0.0f, 0.0f, 0.0f}, 
+            Vector3{0.0f, 1.0f, 0.0f}));
+    mCamera = new SceneGraph::Camera3D{mCameraObject};
+    (*mCamera)
+        .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
+        .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.01f, 1000.0f))
+        .setViewport(GL::defaultFramebuffer.viewport().size());
+
+    /* Base object, parent of all (for easy manipulation) */
+    mManimpulator.setParent(&mScene);
+    mSceneLightObj = new Object3D(&mManimpulator);   
+
+    // place light on scene
+    mLightCheckTimestamp = std::chrono::steady_clock::now();
+    placeLightTimeBased();
+
+    // initializing Eart object
+    mEarthObj = new Object3D(&mManimpulator);
+    new TexturedDrawable(*mEarthObj, mEartShader, mEarthMesh, mEarthTexture, mDrawables, mSceneLightObj);
+    mEarthObj->rotateX(Magnum::Deg(-90.0f));
+}
+
+void CoordinatViewer::loadResources() 
+{
+    PluginManager::Manager<Trade::AbstractImporter> manager;
+    auto assimpImporter = manager.loadAndInstantiate("AssimpImporter");
+    if (!assimpImporter->openFile("./resources/Earth.fbx")) {
+        Error{} << "Cannot load Earth.fbx";
+        exit(LOADING_ERROR);
+    }
+    auto pngImporter = manager.loadAndInstantiate("PngImporter");
+    if (!pngImporter->openFile("./resources/Diffuse.png")) {
+        Error{} << "Cannot load Diffuse.png";
+        exit(LOADING_ERROR);
+    }
+
+    if (assimpImporter->meshCount() < 1) {
+        Error{} << "Cannot find meshes in Earth.fbx";
+        exit(LOADING_ERROR);
+    }
+    auto meshData = assimpImporter->mesh(0);
+    mEarthMesh = MeshTools::compile(*meshData);
+
+    if (pngImporter->image2DCount() < 1) {
+        Error{} << "Cannot find images in Diffuse.png";
+        exit(LOADING_ERROR);
+    }
+    auto image = pngImporter->image2D(0);
+    
+    mEarthTexture.setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setMinificationFilter(GL::SamplerFilter::Linear, GL::SamplerMipmap::Linear)
+        .setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setMaxAnisotropy(GL::Sampler::maxMaxAnisotropy())
+        .setStorage(1, GL::textureFormat(image->format()), image->size())
+        .setSubImage(0, {}, *image);    
+}
+
 void CoordinatViewer::drawEvent() 
 {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth);
@@ -99,76 +169,6 @@ void CoordinatViewer::placeLightTimeBased()
     float minutesInCurDay = utc_time.tm_hour * utc_time.tm_min;
     mLightAngle = mapZeroBased(60 * 24, 360.0f, minutesInCurDay);
     mSceneLightObj->translate(fromPolarCoordinates(-mLightAngle, LIGHT_VERTICAL_ANGLE, LIGHT_DISTANCE));
-}
-
-void CoordinatViewer::objectsInit() 
-{
-    // set renderer and shader defaults
-    mEartShader
-        .setAmbientColor(0x505050_rgbf)
-        .setDiffuseColor(0xb0b0b0_rgbf)
-        .setSpecularColor(0x777777_rgbf)
-        .setShininess(200.0f);
-    
-    /* Every scene needs a camera */
-    mCameraObject
-        .setParent(&mScene)
-        .transform(Matrix4::lookAt(fromPolarCoordinates(mCameraHorizontalAngle, mCameraVerticalAngle, mCameraDistance), 
-            Vector3{0.0f, 0.0f, 0.0f}, 
-            Vector3{0.0f, 1.0f, 0.0f}));
-    mCamera = new SceneGraph::Camera3D{mCameraObject};
-    (*mCamera)
-        .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.01f, 1000.0f))
-        .setViewport(GL::defaultFramebuffer.viewport().size());
-
-    /* Base object, parent of all (for easy manipulation) */
-    mManimpulator.setParent(&mScene);
-    mSceneLightObj = new Object3D(&mManimpulator);   
-
-    // place light on scene
-    mLightCheckTimestamp = std::chrono::steady_clock::now();
-    placeLightTimeBased();
-
-    // initializing Eart object
-    mEarthObj = new Object3D(&mManimpulator);
-    new TexturedDrawable(*mEarthObj, mEartShader, mEarthMesh, mEarthTexture, mDrawables, mSceneLightObj);
-    mEarthObj->rotateX(Magnum::Deg(-90.0f));
-}
-
-void CoordinatViewer::loadResources() 
-{
-    PluginManager::Manager<Trade::AbstractImporter> manager;
-    auto assimpImporter = manager.loadAndInstantiate("AssimpImporter");
-    if (!assimpImporter->openFile("./resources/Earth.fbx")) {
-        Error{} << "Cannot load Earth.fbx";
-        exit(LOADING_ERROR);
-    }
-    auto pngImporter = manager.loadAndInstantiate("PngImporter");
-    if (!pngImporter->openFile("./resources/Diffuse.png")) {
-        Error{} << "Cannot load Diffuse.png";
-        exit(LOADING_ERROR);
-    }
-
-    if (assimpImporter->meshCount() < 1) {
-        Error{} << "Cannot find meshes in Earth.fbx";
-        exit(LOADING_ERROR);
-    }
-    auto meshData = assimpImporter->mesh(0);
-    mEarthMesh = MeshTools::compile(*meshData);
-
-    if (pngImporter->image2DCount() < 1) {
-        Error{} << "Cannot find images in Diffuse.png";
-        exit(LOADING_ERROR);
-    }
-    auto image = pngImporter->image2D(0);
-    
-    mEarthTexture.setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setMinificationFilter(GL::SamplerFilter::Linear, GL::SamplerMipmap::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setMaxAnisotropy(GL::Sampler::maxMaxAnisotropy())
-        .setStorage(1, GL::textureFormat(image->format()), image->size())
-        .setSubImage(0, {}, *image);    
 }
 
 Vector3 CoordinatViewer::fromPolarCoordinates(float phi, float theta, float r) 
