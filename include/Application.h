@@ -54,10 +54,13 @@ private:
     void loadResources();
 
     void drawEvent() override;
+    void keyPressEvent(KeyEvent& event) override;
+    void keyReleaseEvent(KeyEvent& event) override;
     void mousePressEvent(MouseEvent& event) override;
     void mouseReleaseEvent(MouseEvent& event) override;
     void mouseMoveEvent(MouseMoveEvent& event) override;
     void mouseScrollEvent(MouseScrollEvent& event) override;
+    void textInputEvent(TextInputEvent& event) override;
     void viewportEvent(ViewportEvent& event) override;
 
     void placeCamera();

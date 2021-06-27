@@ -106,21 +106,34 @@ void CoordinatViewer::drawEvent()
     redraw();
 }
 
+void CoordinatViewer::keyPressEvent(KeyEvent& event) 
+{
+    if (mImgui.keyPressEvent(event)) return;
+}
+
+void CoordinatViewer::keyReleaseEvent(KeyEvent& event) 
+{
+    if (mImgui.keyReleaseEvent(event)) return;
+}
+
 void CoordinatViewer::mousePressEvent(MouseEvent& event) 
 {
-    if(event.button() == MouseEvent::Button::Left)
+    if (mImgui.mousePressEvent(event)) return;
+    if (event.button() == MouseEvent::Button::Left)
         mPreviousPosition = event.position();
 }
 
 void CoordinatViewer::mouseReleaseEvent(MouseEvent& event) 
 {
-    if(event.button() == MouseEvent::Button::Left)
+    if (mImgui.mouseReleaseEvent(event)) return;
+    if (event.button() == MouseEvent::Button::Left)
         mPreviousPosition = Vector2i();
 }
 
 void CoordinatViewer::mouseMoveEvent(MouseMoveEvent& event) 
 {
-    if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
+    if (mImgui.mouseMoveEvent(event)) return;
+    if (!(event.buttons() & MouseMoveEvent::Button::Left)) return;
 
     auto currentPosition = event.position();
     float horAngle = (currentPosition.x() - mPreviousPosition.x()) * ROTATION_RATIO;
@@ -143,12 +156,21 @@ void CoordinatViewer::mouseMoveEvent(MouseMoveEvent& event)
 
 void CoordinatViewer::mouseScrollEvent(MouseScrollEvent& event) 
 {
-    if(!event.offset().y()) return;
+    if (mImgui.mouseScrollEvent(event)) {
+        event.setAccepted();
+        return;
+    }
+    if (!event.offset().y()) return;
     const Float distance = mCameraObject.transformation().translation().z();
     float offset = (event.offset().y() < 0 ? SCROLL_DELTA : -SCROLL_DELTA);
     if (mCameraDistance + offset > MIN_ZOOM_IN && mCameraDistance + offset < MAX_ZOOM_OUT)
         mCameraDistance += offset;
     placeCamera();
+}
+
+void CoordinatViewer::textInputEvent(TextInputEvent& event) 
+{
+    if (mImgui.textInputEvent(event)) return;
 }
 
 void CoordinatViewer::viewportEvent(ViewportEvent& event) 

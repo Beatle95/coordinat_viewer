@@ -23,7 +23,13 @@ void ImGuiImpl::init(
 void ImGuiImpl::draw() 
 {
     mImgui.newFrame();
-    ImGui::Begin("Window", nullptr);
+    /* Enable text input, if needed */
+    if(ImGui::GetIO().WantTextInput && !mApplication->isTextInputActive())
+        mApplication->startTextInput();
+    else if(!ImGui::GetIO().WantTextInput && mApplication->isTextInputActive())
+        mApplication->stopTextInput();
+    // draw light position window
+    ImGui::Begin("Light positioning", nullptr);
     {
         ImGui::Text("Hello, world!");
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
@@ -45,10 +51,4 @@ void ImGuiImpl::draw()
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
     GL::Renderer::disable(GL::Renderer::Feature::ScissorTest);
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
-}
-
-void ImGuiImpl::viewportEvent(Platform::Application::ViewportEvent& event) 
-{    
-    mImgui.relayout(Vector2{event.windowSize()}/event.dpiScaling(),
-        event.windowSize(), event.framebufferSize());
 }

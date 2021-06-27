@@ -18,7 +18,48 @@ public:
         const Vector2& dpiScaling, 
         const Vector2i& framebufferSize);
     void draw();
-    void viewportEvent(Platform::Application::ViewportEvent& event);
+
+    inline bool keyPressEvent(Platform::Application::KeyEvent& event)
+    {
+        return mImgui.handleKeyPressEvent(event);
+    }
+
+    inline bool keyReleaseEvent(Platform::Application::KeyEvent& event)
+    {
+        return mImgui.handleKeyReleaseEvent(event);
+    }
+
+    inline bool mousePressEvent(Platform::Application::MouseEvent& event)
+    {
+        return mImgui.handleMousePressEvent(event);
+    }
+
+    inline bool mouseReleaseEvent(Platform::Application::MouseEvent& event)
+    {
+        return mImgui.handleMouseReleaseEvent(event);
+    }
+
+    inline bool mouseMoveEvent(Platform::Application::MouseMoveEvent& event)
+    {
+        return mImgui.handleMouseMoveEvent(event);
+    }
+
+    inline bool mouseScrollEvent(Platform::Application::MouseScrollEvent& event)
+    {
+        return mImgui.handleMouseScrollEvent(event);
+    }
+
+    inline bool textInputEvent(Platform::Application::TextInputEvent& event)
+    {
+        return mImgui.handleTextInputEvent(event);
+    }
+    
+    inline void viewportEvent(Platform::Application::ViewportEvent& event)
+    {
+        mImgui.relayout(Vector2{event.windowSize()}/event.dpiScaling(),
+            event.windowSize(), event.framebufferSize());
+    }
+
 private:
     Platform::Application *mApplication;
     ImGuiIntegration::Context mImgui{NoCreate};
