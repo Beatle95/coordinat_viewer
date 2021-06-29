@@ -31,9 +31,9 @@ void ImGuiImpl::draw()
         mApplication->stopTextInput();
     // draw light position window
     ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::Begin("Settings", nullptr);
+    ImGui::Begin("Windows", nullptr);
     {
-        ImGui::Text("Some settings here");
+        ImGui::Text("Empty");
     }
     ImGui::End();
     /* Update application cursor */

@@ -5,7 +5,8 @@ CoordinateViewer::CoordinateViewer(const Arguments& arguments):
         Configuration{}
         .setTitle("Coordinat Viewer")
         .setSize(Vector2i{800, 800})
-        .setWindowFlags(Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Resizable)}
+        .setWindowFlags(Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Resizable | 
+        Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Maximized)}
 {
     mImgui.init(this, windowSize(), dpiScaling(), framebufferSize());
 
@@ -94,7 +95,7 @@ void CoordinateViewer::loadResources()
 void CoordinateViewer::drawEvent() 
 {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth);
-    
+
     if (mIsLightPosRealTimeBased && std::chrono::steady_clock::now() - mMainLightTimestamp > 20s){
         mMainLightTimestamp = std::chrono::steady_clock::now();
         placeLightTimeBased(std::chrono::system_clock::now());
