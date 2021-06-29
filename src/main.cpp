@@ -1,7 +1,7 @@
 #include <iostream>
-#include "Application.h"
+#include "CoordinateViewer.h"
 
 int main(int argc, char** argv) {
-    CoordinatViewer app({argc, argv});
+    CoordinateViewer app({argc, argv});
     return app.exec();
 }

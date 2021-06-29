@@ -1,6 +1,6 @@
-#include "Application.h"
+#include "CoordinateViewer.h"
 
-CoordinatViewer::CoordinatViewer(const Arguments& arguments):
+CoordinateViewer::CoordinateViewer(const Arguments& arguments):
     Platform::Application{arguments, 
         Configuration{}
         .setTitle("Coordinat Viewer")
@@ -21,7 +21,7 @@ CoordinatViewer::CoordinatViewer(const Arguments& arguments):
     setMinimalLoopPeriod(16);
 }
 
-void CoordinatViewer::objectsInit() 
+void CoordinateViewer::objectsInit() 
 {
     // set renderer and shader defaults
     mEartShader
@@ -47,17 +47,16 @@ void CoordinatViewer::objectsInit()
     mSceneLightObj = new Object3D(&mManimpulator);   
 
     // place light on scene
-    mLightCheckTimestamp = std::chrono::steady_clock::now();
-    mLightTime = std::chrono::system_clock::now();
-    placeLightTimeBased(mLightTime);
+    mMainLightTimestamp = std::chrono::steady_clock::now();
+    placeLightTimeBased(std::chrono::system_clock::now());
 
     // initializing Eart object
     mEarthObj = new Object3D(&mManimpulator);
     new TexturedDrawable(*mEarthObj, mEartShader, mEarthMesh, mEarthTexture, mDrawables, mSceneLightObj);
-    mEarthObj->rotateX(Magnum::Deg(-90.0f));
+    mEarthObj->rotateX(-Rad(Constants::pi() / 2));
 }
 
-void CoordinatViewer::loadResources() 
+void CoordinateViewer::loadResources() 
 {
     PluginManager::Manager<Trade::AbstractImporter> manager;
     auto assimpImporter = manager.loadAndInstantiate("AssimpImporter");
@@ -92,45 +91,46 @@ void CoordinatViewer::loadResources()
         .setSubImage(0, {}, *image);    
 }
 
-void CoordinatViewer::drawEvent() 
+void CoordinateViewer::drawEvent() 
 {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth);
-    if (mIsLightPosRealTimeBased && std::chrono::steady_clock::now() - mLightCheckTimestamp > 20s){
-        mLightCheckTimestamp = std::chrono::steady_clock::now();
-        mLightTime = std::chrono::system_clock::now();
+    
+    if (mIsLightPosRealTimeBased && std::chrono::steady_clock::now() - mMainLightTimestamp > 20s){
+        mMainLightTimestamp = std::chrono::steady_clock::now();
+        placeLightTimeBased(std::chrono::system_clock::now());
     }
-    placeLightTimeBased(mLightTime);
+
     mCamera->draw(mDrawables);    
     mImgui.draw();
     swapBuffers();
     redraw();
 }
 
-void CoordinatViewer::keyPressEvent(KeyEvent& event) 
+void CoordinateViewer::keyPressEvent(KeyEvent& event) 
 {
     if (mImgui.keyPressEvent(event)) return;
 }
 
-void CoordinatViewer::keyReleaseEvent(KeyEvent& event) 
+void CoordinateViewer::keyReleaseEvent(KeyEvent& event) 
 {
     if (mImgui.keyReleaseEvent(event)) return;
 }
 
-void CoordinatViewer::mousePressEvent(MouseEvent& event) 
+void CoordinateViewer::mousePressEvent(MouseEvent& event) 
 {
     if (mImgui.mousePressEvent(event)) return;
     if (event.button() == MouseEvent::Button::Left)
         mPreviousPosition = event.position();
 }
 
-void CoordinatViewer::mouseReleaseEvent(MouseEvent& event) 
+void CoordinateViewer::mouseReleaseEvent(MouseEvent& event) 
 {
     if (mImgui.mouseReleaseEvent(event)) return;
     if (event.button() == MouseEvent::Button::Left)
         mPreviousPosition = Vector2i();
 }
 
-void CoordinatViewer::mouseMoveEvent(MouseMoveEvent& event) 
+void CoordinateViewer::mouseMoveEvent(MouseMoveEvent& event) 
 {
     if (mImgui.mouseMoveEvent(event)) return;
     if (!(event.buttons() & MouseMoveEvent::Button::Left)) return;
@@ -140,21 +140,21 @@ void CoordinatViewer::mouseMoveEvent(MouseMoveEvent& event)
     float verAngle = (currentPosition.y() - mPreviousPosition.y()) * ROTATION_RATIO;
 
     auto newAngle = mCameraHorizontalAngle - horAngle;
-    if (newAngle > 360.0f)
-        newAngle -= 360.0f;
-    if (newAngle < -360.0f)
-        newAngle += 360.0f;
+    if (newAngle > Constants::pi() * 2)
+        newAngle -= Constants::pi() * 2;
+    if (newAngle < -Constants::pi() * 2)
+        newAngle += Constants::pi() * 2;
     mCameraHorizontalAngle = newAngle;
 
     newAngle = mCameraVerticalAngle - verAngle;
-    if (newAngle > 10.0f && newAngle < 170.0f)
+    if (newAngle > CAMERA_VERT_MAX && newAngle < CAMERA_VERT_MIN)
         mCameraVerticalAngle -= verAngle;
 
     mPreviousPosition = currentPosition;
     placeCamera();
 }
 
-void CoordinatViewer::mouseScrollEvent(MouseScrollEvent& event) 
+void CoordinateViewer::mouseScrollEvent(MouseScrollEvent& event) 
 {
     if (mImgui.mouseScrollEvent(event)) {
         event.setAccepted();
@@ -168,43 +168,43 @@ void CoordinatViewer::mouseScrollEvent(MouseScrollEvent& event)
     placeCamera();
 }
 
-void CoordinatViewer::textInputEvent(TextInputEvent& event) 
+void CoordinateViewer::textInputEvent(TextInputEvent& event) 
 {
     if (mImgui.textInputEvent(event)) return;
 }
 
-void CoordinatViewer::viewportEvent(ViewportEvent& event) 
+void CoordinateViewer::viewportEvent(ViewportEvent& event) 
 {    
     GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
     mCamera->setViewport(event.windowSize());
     mImgui.viewportEvent(event);
 }
 
-void CoordinatViewer::placeCamera() 
+void CoordinateViewer::placeCamera() 
 {
     auto pos = fromPolarCoordinates(mCameraHorizontalAngle, mCameraVerticalAngle, mCameraDistance);
     mCameraObject.setTransformation(Matrix4::lookAt(pos, Vector3{0.0f, 0.0f, 0.0f}, Vector3{0.0f, 1.0f, 0.0f}));
 }
 
-void CoordinatViewer::placeLightTimeBased(const std::chrono::system_clock::time_point& time_point) 
+void CoordinateViewer::placeLightTimeBased(const std::chrono::system_clock::time_point& time_point) 
 {
     time_t tt = std::chrono::system_clock::to_time_t(time_point);
     tm utc_time = *gmtime(&tt);
     float minutesInCurDay = utc_time.tm_hour * 60 + utc_time.tm_min;
-    float lightAmgle = mapZeroBased(60 * 24, 360.0f, minutesInCurDay) - 180.0f;
-    mSceneLightObj->translate(fromPolarCoordinates(-lightAmgle, LIGHT_VERTICAL_ANGLE, LIGHT_DISTANCE));
+    auto lightAngle = mapZeroBased(60 * 24, Constants::pi() * 2, minutesInCurDay) - Constants::pi();
+    mSceneLightObj->translate(fromPolarCoordinates(-lightAngle, LIGHT_VERTICAL_ANGLE, LIGHT_DISTANCE));
 }
 
-Vector3 CoordinatViewer::fromPolarCoordinates(const float phi, const float theta, const float r) 
+Vector3 CoordinateViewer::fromPolarCoordinates(const float phi_rad, const float theta_rad, const float r) 
 {
     Vector3 pos;
-    pos.x() = r * sin(Deg(theta)) * sin(Deg(phi));
-    pos.y() = r * cos(Deg(theta));
-    pos.z() = r * sin(Deg(theta)) * cos(Deg(phi));
+    pos.x() = r * sin(theta_rad) * sin(phi_rad);
+    pos.y() = r * cos(theta_rad);
+    pos.z() = r * sin(theta_rad) * cos(phi_rad);
     return pos;
 }
 
-float CoordinatViewer::mapZeroBased(const float fromMax, const float toMax, const float value) 
+float CoordinateViewer::mapZeroBased(const float fromMax, const float toMax, const float value) 
 {
     float result = 0.0f;
     result = value / fromMax * toMax;

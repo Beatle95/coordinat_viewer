@@ -1,4 +1,5 @@
 #include "ImGuiImpl.h"
+#include "CoordinateViewer.h"
 
 void ImGuiImpl::init(
     Platform::Application *application, 
@@ -30,11 +31,9 @@ void ImGuiImpl::draw()
         mApplication->stopTextInput();
     // draw light position window
     ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::Begin("Light positioning", nullptr);
+    ImGui::Begin("Settings", nullptr);
     {
-        ImGui::Text("Hello, world!");
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-            1000.0/Double(ImGui::GetIO().Framerate), Double(ImGui::GetIO().Framerate));
+        ImGui::Text("Some settings here");
     }
     ImGui::End();
     /* Update application cursor */

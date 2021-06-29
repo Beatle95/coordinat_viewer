@@ -33,9 +33,11 @@
 #define SCROLL_DELTA            2.5f
 #define MIN_ZOOM_IN             5.0f
 #define MAX_ZOOM_OUT            20.0f
-#define ROTATION_RATIO          0.125f
+#define ROTATION_RATIO          0.002f
+#define CAMERA_VERT_MAX         0.1f
+#define CAMERA_VERT_MIN         3.0f
 #define LIGHT_DISTANCE          30.0f
-#define LIGHT_VERTICAL_ANGLE    90.0f
+#define LIGHT_VERTICAL_ANGLE    Constants::pi() / 2
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
@@ -44,10 +46,11 @@ using namespace std::chrono_literals;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
-class CoordinatViewer: public Platform::Application 
+class CoordinateViewer: public Platform::Application 
 {
 public:
-    explicit CoordinatViewer(const Arguments& arguments);
+    explicit CoordinateViewer(const Arguments& arguments);
+    friend class ImGuiImpl;
 
 private:
     void objectsInit();
@@ -66,7 +69,7 @@ private:
     void placeCamera();
     void placeLightTimeBased(const std::chrono::system_clock::time_point& time_point);
 
-    static Vector3 fromPolarCoordinates(const float phi, const float theta, const float r);
+    static Vector3 fromPolarCoordinates(const float phi_rad, const float theta_rad, const float r);
     static float mapZeroBased(const float fromMax, const float toMax, const float value);
 
     ImGuiImpl mImgui;
@@ -85,10 +88,9 @@ private:
     Vector2i mPreviousPosition;
 
     float mCameraHorizontalAngle = 0.0f;
-    float mCameraVerticalAngle = 90.0f;
+    float mCameraVerticalAngle = Constants::pi() / 2;
     float mCameraDistance = 10.0f;
 
     bool mIsLightPosRealTimeBased = true;
-    std::chrono::system_clock::time_point mLightTime;
-    std::chrono::steady_clock::time_point mLightCheckTimestamp;
+    std::chrono::steady_clock::time_point mMainLightTimestamp;
 };
