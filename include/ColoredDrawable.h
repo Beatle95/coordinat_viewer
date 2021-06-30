@@ -1,3 +1,5 @@
+#ifndef COLORED_DRAWABLE
+#define COLORED_DRAWABLE
 #include <Magnum/ImageView.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
@@ -32,11 +34,15 @@ public:
         mShader(shader), 
         mMesh(mesh),
         mColor(color) {}
+    
+    void setColor(const Color4& color) { mColor = color; }
 
 private:
     void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 
     Shaders::PhongGL& mShader;
     GL::Mesh& mMesh;
-    const Color4 mColor;
+    Color4 mColor;
 };
+
+#endif

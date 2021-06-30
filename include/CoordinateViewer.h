@@ -26,10 +26,12 @@
 #include <Magnum/Primitives/UVSphere.h>
 
 #include <chrono>
+#include <list>
 
 #include "TexturedDrawable.h"
 #include "ColoredDrawable.h"
 #include "ImGuiImpl.h"
+#include "CallPoint.h"
 
 #define LOADING_ERROR           1
 #define SCROLL_DELTA            2.5f
@@ -97,4 +99,6 @@ private:
 
     bool mIsLightPosRealTimeBased = true;
     std::chrono::steady_clock::time_point mMainLightTimestamp;
+
+    std::list<CallPoint*> mCallPoints;
 };

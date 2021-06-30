@@ -14,6 +14,8 @@ CoordinateViewer::CoordinateViewer(const Arguments& arguments):
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
     GL::Renderer::setClearColor(0x050505_rgbf);
 
+    mCallPoints.push_back(new CallPoint(&mManimpulator, &mColoredDrawables, &mColorShader, &mPointMesh, 20.0f, 40.0f));
+
     loadResources();
     objectsInit();
 
@@ -103,8 +105,8 @@ void CoordinateViewer::drawEvent()
         placeLightTimeBased(std::chrono::system_clock::now());
     }
 
-    mCamera->draw(mTexturedDrawables);   
     mCamera->draw(mColoredDrawables); 
+    mCamera->draw(mTexturedDrawables);   
     mImgui.draw();
     swapBuffers();
     redraw();
