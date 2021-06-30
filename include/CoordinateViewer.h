@@ -23,10 +23,12 @@
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
+#include <Magnum/Primitives/UVSphere.h>
 
 #include <chrono>
 
 #include "TexturedDrawable.h"
+#include "ColoredDrawable.h"
 #include "ImGuiImpl.h"
 
 #define LOADING_ERROR           1
@@ -73,18 +75,20 @@ private:
     static float mapZeroBased(const float fromMax, const float toMax, const float value);
 
     ImGuiImpl mImgui;
-    GL::Mesh mEarthMesh;
+    GL::Mesh mEarthMesh, mPointMesh;
     GL::Texture2D mEarthTexture;
-    Shaders::PhongGL mEartShader{
+    Shaders::PhongGL mEarthShader{
         Shaders::PhongGL::Flag::DiffuseTexture 
         | Shaders::PhongGL::Flag::AmbientTexture 
         | Shaders::PhongGL::Flag::SpecularTexture};
+    Shaders::PhongGL mColorShader;
 
     Scene3D mScene;
     Object3D mManimpulator, mCameraObject;
     Object3D *mSceneLightObj, *mEarthObj;
     SceneGraph::Camera3D *mCamera;
-    SceneGraph::DrawableGroup3D mDrawables;
+    SceneGraph::DrawableGroup3D mTexturedDrawables;
+    SceneGraph::DrawableGroup3D mColoredDrawables;
     Vector2i mPreviousPosition;
 
     float mCameraHorizontalAngle = 0.0f;

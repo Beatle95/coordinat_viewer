@@ -7,12 +7,12 @@ void TexturedDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Cam
     auto VP = view;
     auto absoluteLightPos = VP * Vector4(lightPos, 0);
     mShader
-    .setLightPositions({
-        absoluteLightPos
-    })
-    .setTransformationMatrix(transformationMatrix)
-    .setNormalMatrix(transformationMatrix.normalMatrix())
-    .setProjectionMatrix(camera.projectionMatrix())
-    .bindTextures(&mTexture, &mTexture, &mTexture)
-    .draw(mMesh);
+        .setLightPositions({
+            absoluteLightPos
+        })
+        .setTransformationMatrix(transformationMatrix)
+        .setNormalMatrix(transformationMatrix.normalMatrix())
+        .setProjectionMatrix(camera.projectionMatrix())
+        .bindTextures(&mTexture, &mTexture, &mTexture)
+        .draw(mMesh);
 }

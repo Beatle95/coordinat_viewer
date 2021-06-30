@@ -24,14 +24,14 @@ CoordinateViewer::CoordinateViewer(const Arguments& arguments):
 
 void CoordinateViewer::objectsInit() 
 {
-    // set renderer and shader defaults
-    mEartShader
+    // set shader defaults
+    mEarthShader
         .setAmbientColor(0x505050_rgbf)
         .setDiffuseColor(0xb0b0b0_rgbf)
         .setSpecularColor(0x777777_rgbf)
         .setShininess(200.0f);
     
-    /* Every scene needs a camera */
+    // every scene needs a camera
     mCameraObject
         .setParent(&mScene)
         .transform(Matrix4::lookAt(fromPolarCoordinates(mCameraHorizontalAngle, mCameraVerticalAngle, mCameraDistance), 
@@ -43,7 +43,7 @@ void CoordinateViewer::objectsInit()
         .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.01f, 1000.0f))
         .setViewport(GL::defaultFramebuffer.viewport().size());
 
-    /* Base object, parent of all (for easy manipulation) */
+    // base object, parent of all (for easy manipulation)
     mManimpulator.setParent(&mScene);
     mSceneLightObj = new Object3D(&mManimpulator);   
 
@@ -53,7 +53,7 @@ void CoordinateViewer::objectsInit()
 
     // initializing Eart object
     mEarthObj = new Object3D(&mManimpulator);
-    new TexturedDrawable(*mEarthObj, mEartShader, mEarthMesh, mEarthTexture, mDrawables, mSceneLightObj);
+    new TexturedDrawable(*mEarthObj, mEarthShader, mEarthMesh, mEarthTexture, mTexturedDrawables, mSceneLightObj);
     mEarthObj->rotateX(-Rad(Constants::pi() / 2));
 }
 
@@ -89,7 +89,9 @@ void CoordinateViewer::loadResources()
         .setWrapping(GL::SamplerWrapping::ClampToEdge)
         .setMaxAnisotropy(GL::Sampler::maxMaxAnisotropy())
         .setStorage(1, GL::textureFormat(image->format()), image->size())
-        .setSubImage(0, {}, *image);    
+        .setSubImage(0, {}, *image); 
+
+    mPointMesh = MeshTools::compile(Primitives::uvSphereSolid(10, 20));   
 }
 
 void CoordinateViewer::drawEvent() 
@@ -101,7 +103,8 @@ void CoordinateViewer::drawEvent()
         placeLightTimeBased(std::chrono::system_clock::now());
     }
 
-    mCamera->draw(mDrawables);    
+    mCamera->draw(mTexturedDrawables);   
+    mCamera->draw(mColoredDrawables); 
     mImgui.draw();
     swapBuffers();
     redraw();

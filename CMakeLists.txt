@@ -14,6 +14,7 @@ find_package(
     Magnum REQUIRED
     GL 
     MeshTools
+    Primitives
     Trade
     Shaders
     SceneGraph
@@ -44,6 +45,7 @@ target_link_libraries(
     Magnum::MeshTools
     Magnum::SceneGraph
     Magnum::Shaders
+    Magnum::Primitives
     Magnum::Trade
     Magnum::AnySceneImporter
     MagnumIntegration::ImGui
