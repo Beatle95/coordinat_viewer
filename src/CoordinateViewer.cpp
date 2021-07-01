@@ -14,7 +14,7 @@ CoordinateViewer::CoordinateViewer(const Arguments& arguments):
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
     GL::Renderer::setClearColor(0x050505_rgbf);
 
-    mCallPoints.push_back(new CallPoint(&mManimpulator, &mColoredDrawables, &mColorShader, &mPointMesh, 20.0f, 40.0f));
+    mCallPoints.push_back(new CallPoint(&mManimpulator, &mColoredDrawables, &mColorShader, &mPointMesh, 0.0f, 0.0f));
 
     loadResources();
     objectsInit();
@@ -32,6 +32,9 @@ void CoordinateViewer::objectsInit()
         .setDiffuseColor(0xb0b0b0_rgbf)
         .setSpecularColor(0x777777_rgbf)
         .setShininess(200.0f);
+    mColorShader
+        .setDiffuseColor(0x555555_rgbf)
+        .setSpecularColor(0x000000_rgbf);
     
     // every scene needs a camera
     mCameraObject
@@ -77,8 +80,8 @@ void CoordinateViewer::loadResources()
         Error{} << "Cannot find meshes in Earth.fbx";
         exit(LOADING_ERROR);
     }
-    auto meshData = assimpImporter->mesh(0);
-    mEarthMesh = MeshTools::compile(*meshData);
+    auto earthMeshData = assimpImporter->mesh(0);
+    mEarthMesh = MeshTools::compile(*earthMeshData);
 
     if (pngImporter->image2DCount() < 1) {
         Error{} << "Cannot find images in Diffuse.png";
@@ -93,7 +96,16 @@ void CoordinateViewer::loadResources()
         .setStorage(1, GL::textureFormat(image->format()), image->size())
         .setSubImage(0, {}, *image); 
 
-    mPointMesh = MeshTools::compile(Primitives::uvSphereSolid(10, 20));   
+    if (!assimpImporter->openFile("./resources/Point.fbx")) {
+        Error{} << "Cannot load Point.fbx";
+        exit(LOADING_ERROR);
+    }
+    if (assimpImporter->meshCount() < 1) {
+        Error{} << "Cannot find meshes in Point.fbx";
+        exit(LOADING_ERROR);
+    }
+    auto pointMeshData = assimpImporter->mesh(0);
+    mPointMesh = MeshTools::compile(*pointMeshData);
 }
 
 void CoordinateViewer::drawEvent() 
