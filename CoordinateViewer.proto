@@ -1,6 +1,8 @@
 syntax = "proto3";
 package CoordinateViewer;
 
+message ReturnValue {}
+
 message CallPoint {
     string  number = 1;
     string  imei = 2;
@@ -10,5 +12,10 @@ message CallPoint {
 
 message Session {
     fixed64             timestamp = 1;
-    repeated CallPoint  points = 2;
+    fixed64             duration = 2;
+    repeated CallPoint  points = 3;
+}
+
+service CoordinateViewerService {
+    rpc add_session(Session) returns (ReturnValue) {}
 }
