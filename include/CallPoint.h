@@ -10,7 +10,6 @@
 #define DEFAULT_COLOR   0x888888_rgbf
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
-class Session;
 
 class CallPoint
 {
