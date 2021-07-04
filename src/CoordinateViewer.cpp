@@ -6,8 +6,7 @@ CoordinateViewer::CoordinateViewer(const Arguments& arguments):
         .setTitle("Coordinat Viewer")
         .setSize(Vector2i{800, 800})
         .setWindowFlags(Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Resizable | 
-        Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Maximized)},
-    mCallPoint(&mManimpulator, &mColoredDrawables, &mColorShader, &mPointMesh)
+        Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Maximized)}
 {
     mImgui.init(this, windowSize(), dpiScaling(), framebufferSize());
 
@@ -21,9 +20,6 @@ CoordinateViewer::CoordinateViewer(const Arguments& arguments):
     /* Loop at 60 Hz max */
     setSwapInterval(1);
     setMinimalLoopPeriod(16);
-    mCallPoint.setPosition(50, 0);
-    mCallPoint.setPosition(30, 0);
-    mCallPoint.setPosition(10, 0);
 }
 
 void CoordinateViewer::objectsInit() 

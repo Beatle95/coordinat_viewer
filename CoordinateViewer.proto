@@ -2,13 +2,13 @@ syntax = "proto3";
 package CoordinateViewer;
 
 message CallPoint {
-    string  number = 0;
-    string  imei = 1;
-    float   lat = 2;
-    float   lon = 3;
+    string  number = 1;
+    string  imei = 2;
+    float   lat = 3;
+    float   lon = 4;
 }
 
 message Session {
-    fixed64 timestamp = 0;
-    repeted CallPoint = 1;
+    fixed64             timestamp = 1;
+    repeated CallPoint  points = 2;
 }

@@ -99,7 +99,7 @@ private:
     float mCameraDistance = 10.0f;
     std::chrono::steady_clock::time_point mMainLightTimestamp;
 
-    CallPoint mCallPoint;
+    std::list<CallPoint> mPoints;
 };
 
 #endif

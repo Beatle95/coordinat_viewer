@@ -4,6 +4,7 @@
 #include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/GL/Mesh.h>
 
+#include <chrono>
 #include "ColoredDrawable.h"
 
 #define EARTH_RADIUS    3.212f
@@ -27,11 +28,18 @@ public:
 
     void setColor(const Color4& color);
     void setPosition(const float lat, const float lon);
+    void setImei(const std::string& imei) { mImei = imei; }
+    void setBeginTime(const std::chrono::system_clock::time_point& beginTime) { mBeginTime = beginTime; }
+    void setNumber(const std::string& number) { mNumber = number; }
 private:
     Object3D *mObject3D;
     ColoredDrawable *mDrawable;
     SceneGraph::DrawableGroup3D* mDrawableGroup;
+
     float mLat, mLon;
+    std::string mImei;
+    std::chrono::system_clock::time_point mBeginTime;
+    std::string mNumber;
 
     void setObjectPostion();
 };
