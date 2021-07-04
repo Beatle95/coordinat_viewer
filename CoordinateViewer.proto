@@ -1,7 +1,7 @@
 syntax = "proto3";
 package CoordinateViewer;
 
-message ReturnValue {}
+message ReturnStatus {}
 
 message CallPoint {
     string  number = 1;
