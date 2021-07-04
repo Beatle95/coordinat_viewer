@@ -6,7 +6,8 @@ CoordinateViewer::CoordinateViewer(const Arguments& arguments):
         .setTitle("Coordinat Viewer")
         .setSize(Vector2i{800, 800})
         .setWindowFlags(Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Resizable | 
-        Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Maximized)}
+        Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Maximized)},
+    mCallPoint(&mManimpulator, &mColoredDrawables, &mColorShader, &mPointMesh)
 {
     mImgui.init(this, windowSize(), dpiScaling(), framebufferSize());
 
@@ -14,14 +15,15 @@ CoordinateViewer::CoordinateViewer(const Arguments& arguments):
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
     GL::Renderer::setClearColor(0x050505_rgbf);
 
-    mCallPoints.push_back(new CallPoint(&mManimpulator, &mColoredDrawables, &mColorShader, &mPointMesh, 0.0f, 0.0f));
-
     loadResources();
     objectsInit();
 
     /* Loop at 60 Hz max */
     setSwapInterval(1);
     setMinimalLoopPeriod(16);
+    mCallPoint.setPosition(50, 0);
+    mCallPoint.setPosition(30, 0);
+    mCallPoint.setPosition(10, 0);
 }
 
 void CoordinateViewer::objectsInit() 
@@ -112,7 +114,7 @@ void CoordinateViewer::drawEvent()
 {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth);
 
-    if (mIsLightPosRealTimeBased && std::chrono::steady_clock::now() - mMainLightTimestamp > 20s){
+    if (std::chrono::steady_clock::now() - mMainLightTimestamp > 20s){
         mMainLightTimestamp = std::chrono::steady_clock::now();
         placeLightTimeBased(std::chrono::system_clock::now());
     }
@@ -210,6 +212,7 @@ void CoordinateViewer::placeLightTimeBased(const std::chrono::system_clock::time
     tm utc_time = *gmtime(&tt);
     float minutesInCurDay = utc_time.tm_hour * 60 + utc_time.tm_min;
     auto lightAngle = mapZeroBased(60 * 24, Constants::pi() * 2, minutesInCurDay) - Constants::pi();
+    // TODO: check in the future
     mSceneLightObj->translate(fromPolarCoordinates(-lightAngle, LIGHT_VERTICAL_ANGLE, LIGHT_DISTANCE));
 }
 

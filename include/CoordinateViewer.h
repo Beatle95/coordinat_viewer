@@ -1,3 +1,5 @@
+#ifndef COORDINATE_VIEWER
+#define COORDINATE_VIEWER
 #include <Magnum/ImageView.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
@@ -29,7 +31,6 @@
 #include <list>
 
 #include "TexturedDrawable.h"
-#include "ColoredDrawable.h"
 #include "ImGuiImpl.h"
 #include "CallPoint.h"
 
@@ -96,9 +97,9 @@ private:
     float mCameraHorizontalAngle = 0.0f;
     float mCameraVerticalAngle = Constants::pi() / 2;
     float mCameraDistance = 10.0f;
-
-    bool mIsLightPosRealTimeBased = true;
     std::chrono::steady_clock::time_point mMainLightTimestamp;
 
-    std::list<CallPoint*> mCallPoints;
+    CallPoint mCallPoint;
 };
+
+#endif
