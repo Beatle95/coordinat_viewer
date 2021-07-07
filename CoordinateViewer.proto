@@ -17,5 +17,5 @@ message Session {
 }
 
 service CoordinateViewerService {
-    rpc add_session(Session) returns (ReturnValue) {}
+    rpc add_session(Session) returns (ReturnStatus) {}
 }

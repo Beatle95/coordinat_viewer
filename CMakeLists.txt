@@ -107,8 +107,7 @@ target_include_directories(
     ${MAGNUMINTEGRATION_INCLUDE_DIR}
     imgui::imgui
     ${Protobuf_INCLUDE_DIRS}
-    PROTO_H
-    GRPC_H
+    ${CMAKE_BINARY_DIR}
 )
 
 target_link_libraries(
