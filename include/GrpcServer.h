@@ -6,7 +6,8 @@
 
 class CallPointsStorage;
 
-class GrpcServer final : public CoordinateViewer::CoordinateViewerService::Service {
+class GrpcServer final : public CoordinateViewer::CoordinateViewerService::Service 
+{
 public:
     GrpcServer(CallPointsStorage *storage) : mPointsStorage(storage) {}
     ::grpc::Status add_session(::grpc::ServerContext* context, const ::CoordinateViewer::Session* request, ::CoordinateViewer::ReturnStatus* response) override;

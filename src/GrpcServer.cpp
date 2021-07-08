@@ -2,6 +2,7 @@
 
 grpc::Status GrpcServer::add_session(::grpc::ServerContext* context, const ::CoordinateViewer::Session* request, ::CoordinateViewer::ReturnStatus* response) 
 {
+    // TODO: grpc server routine
     unsigned long long timestamp = request->timestamp();
     unsigned long long duration = request->duration();
     for (auto& point : request->points()) {
