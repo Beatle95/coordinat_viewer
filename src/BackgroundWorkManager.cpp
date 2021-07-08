@@ -31,7 +31,7 @@ void BackgroundWorkManager::run()
 {
     if (mWorkThreadPtr.get() == nullptr)
         return;
-    mWorkThreadPtr = std::make_unique<std::thread>(new std::thread(this, &BackgroundWorkManager::workThreadFunc));
+    mWorkThreadPtr = std::make_unique<std::thread>(std::thread(&BackgroundWorkManager::workThreadFunc, this));
 }
 
 void BackgroundWorkManager::workThreadFunc() 
