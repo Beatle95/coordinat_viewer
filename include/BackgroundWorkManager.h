@@ -10,6 +10,8 @@
 
 #include "BasicBackgroundWorker.h"
 
+// this class is designed to produce some interface for long time operations, originally created for
+// managing CallPoint's, but not needed, since the only operation needed there is time interval check
 class BackgroundWorkManager
 {
 public:
