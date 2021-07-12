@@ -120,6 +120,8 @@ void CoordinateViewer::drawEvent()
     mImgui.draw();
     swapBuffers();
     redraw();
+    // now we can do some long time operations cause we swaped buffers just few tics ago
+    
 }
 
 void CoordinateViewer::keyPressEvent(KeyEvent& event) 

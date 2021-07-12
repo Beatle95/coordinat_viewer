@@ -6,6 +6,7 @@
 #include <thread>
 #include <memory>
 #include <algorithm>
+#include <chrono>
 
 #include "BasicBackgroundWorker.h"
 

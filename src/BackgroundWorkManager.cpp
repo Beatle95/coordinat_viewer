@@ -36,5 +36,11 @@ void BackgroundWorkManager::run()
 
 void BackgroundWorkManager::workThreadFunc() 
 {
-    // TODO: work function
+    for (auto& elem : mWorkersList) {
+        auto curTime = std::chrono::steady_clock::now();
+        if (curTime - elem->getLastTimestamp() > std::chrono::milliseconds(elem->getSleepTime())) {
+            elem->doWork();
+            elem->setLastTimestamp(curTime);
+        }
+    }
 }

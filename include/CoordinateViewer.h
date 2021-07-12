@@ -33,6 +33,7 @@
 #include "TexturedDrawable.h"
 #include "ImGuiImpl.h"
 #include "CallPoint.h"
+#include "BackgroundWorkManager.h"
 
 #define LOADING_ERROR           1
 #define SCROLL_DELTA            2.5f
@@ -76,6 +77,8 @@ private:
 
     static Vector3 fromPolarCoordinates(const float phi_rad, const float theta_rad, const float r);
     static float mapZeroBased(const float fromMax, const float toMax, const float value);
+
+    BackgroundWorkManager mBackgroundManager;
 
     ImGuiImpl mImgui;
     GL::Mesh mEarthMesh, mPointMesh;
