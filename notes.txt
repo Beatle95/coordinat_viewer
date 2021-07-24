@@ -3,8 +3,15 @@
 Next commands has to be executed to install coordinate_viewer dependenceies
 vcpkg commands from vcpkg directory:
 
-./vcpkg install magnum[anyimageimporter,anysceneimporter,objimporter,primitives,scenegraph,sdl2application,shaders,shadertools,text,trade] --head --triplet x64-linux
-./vcpkg install magnum-plugins[assimpimporter,pngimporter] --head --triplet x64-linux
-./vcpkg install magnum-integration[imgui] --head --triplet x64-linux
+./vcpkg install corrade --head
+./vcpkg install magnum[anyimageimporter,anysceneimporter,objimporter,primitives,scenegraph,sdl2application,shaders,shadertools,text,trade] --head
+./vcpkg install magnum-plugins[assimpimporter,pngimporter] --head
+./vcpkg install magnum-integration[imgui] --head
+./vcpkg install grpc
+
+###########################################################################
+
+On linux I have to manually apdate cmake files when running "./vcpkg install magnum", cause there are some issue with patch 001-tools-path.patch
+so I patch it's content by hands and then disabled it in portfile.cmake (same for magnum-plugins and magnum-integration).
 
 ###########################################################################
