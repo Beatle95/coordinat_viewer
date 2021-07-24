@@ -10,8 +10,14 @@ vcpkg commands from vcpkg directory:
 ./vcpkg install grpc
 
 ###########################################################################
+Linux issues
 
-On linux I have to manually apdate cmake files when running "./vcpkg install magnum", cause there are some issue with patch 001-tools-path.patch
+1. On linux I have to manually apdate cmake files when running "./vcpkg install magnum", cause there are some issue with patch 001-tools-path.patch
 so I patch it's content by hands and then disabled it in portfile.cmake (same for magnum-plugins and magnum-integration).
+
+2. And even more, I had some issues with sdl2. When my app was running it stops with sdl error "No device found".
+I found that that error caused by installation from vcpkg, to solve it, I had to install sdl2 with vcpkg, but after that
+I had cleared all files in vcpkg that locates sdl2 such as FindSDL2.cmake etc. And after that I had installed this library
+with command 'sudo apt install libsdl2-dev'.
 
 ###########################################################################
