@@ -21,7 +21,11 @@ find_package(
     Sdl2Application
     AnySceneImporter
 )
-find_package(MagnumPlugins REQUIRED)
+find_package(
+    MagnumPlugins REQUIRED 
+    AssimpImporter
+    PngImporter
+)
 find_package(MagnumIntegration REQUIRED ImGui)
 
 # find protobuf and make sources from .proto file
@@ -122,6 +126,8 @@ target_link_libraries(
     Magnum::Primitives
     Magnum::Trade
     Magnum::AnySceneImporter
+    MagnumPlugins::AssimpImporter
+    MagnumPlugins::PngImporter
     MagnumIntegration::ImGui
     ${Protobuf_LIBRARIES}
     gRPC::grpc++_reflection
