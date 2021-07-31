@@ -134,11 +134,19 @@ target_link_libraries(
 )
 
 # copy resources to output directories
-file(
-    COPY ${CMAKE_CURRENT_SOURCE_DIR}/resources/
-    DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Debug/resources/
-)
-file(
-    COPY ${CMAKE_CURRENT_SOURCE_DIR}/resources/
-    DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Release/resources/
-)
+# Make does not creates Debug/Release subfolders, so we have different paths here for different generators
+if (${CMAKE_GENERATOR} MATCHES "Unix Makefiles") 
+    file(
+        COPY ${CMAKE_CURRENT_SOURCE_DIR}/resources/
+        DESTINATION ${EXECUTABLE_OUTPUT_PATH}/resources/
+    )
+else()
+    file(
+        COPY ${CMAKE_CURRENT_SOURCE_DIR}/resources/
+        DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Debug/resources/
+    )
+    file(
+        COPY ${CMAKE_CURRENT_SOURCE_DIR}/resources/
+        DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Release/resources/
+    )    
+endif()
