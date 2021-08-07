@@ -4,15 +4,18 @@
 #include <CoordinateViewer.grpc.pb.h>
 #include <CoordinateViewer.pb.h>
 
-class CallPointsStorage;
+#include <chrono>
+
+class CallPointsManager;
 
 class GrpcServer final : public CoordinateViewer::CoordinateViewerService::Service 
 {
 public:
-    GrpcServer(CallPointsStorage *storage) : mPointsStorage(storage) {}
+    GrpcServer() = delete;
+    explicit GrpcServer(CallPointsManager *manager) : mCallPointsManager(manager) {}
     ::grpc::Status add_session(::grpc::ServerContext* context, const ::CoordinateViewer::Session* request, ::CoordinateViewer::ReturnStatus* response) override;
 private:
-    CallPointsStorage *mPointsStorage;
+    CallPointsManager *mCallPointsManager;
 };
 
 #endif

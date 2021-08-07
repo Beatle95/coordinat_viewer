@@ -9,6 +9,9 @@ BackgroundWorkManager::~BackgroundWorkManager()
     if (mWorkThreadPtr.get() == nullptr)
         return;
     mWorkThreadPtr->join();
+    for (auto worker : mWorkersList) {
+        removeWorker(worker);
+    }
 }
 
 void BackgroundWorkManager::addWorker(BasicBackgroundWorker *item) 

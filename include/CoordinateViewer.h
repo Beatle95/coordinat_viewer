@@ -34,6 +34,10 @@
 #include "ImGuiImpl.h"
 #include "CallPoint.h"
 #include "BackgroundWorkManager.h"
+#include "CallPointsManager.h"
+#include "GrpcServer.h"
+
+namespace CoordinateViewerMain {
 
 #define LOADING_ERROR           1
 #define SCROLL_DELTA            2.5f
@@ -56,7 +60,8 @@ class CoordinateViewer: public Platform::Application
 {
 public:
     explicit CoordinateViewer(const Arguments& arguments);
-    friend class ImGuiImpl;
+    friend class ::ImGuiImpl;
+    friend class ::CallPointsManager;
 
 private:
     void objectsInit();
@@ -79,6 +84,7 @@ private:
     static float mapZeroBased(const float fromMax, const float toMax, const float value);
 
     BackgroundWorkManager mBackgroundManager;
+    CallPointsManager mCallPointsManager;
 
     ImGuiImpl mImgui;
     GL::Mesh mEarthMesh, mPointMesh;
@@ -104,5 +110,7 @@ private:
 
     std::list<CallPoint> mPoints;
 };
+
+}
 
 #endif
