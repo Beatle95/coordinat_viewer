@@ -103,8 +103,7 @@ PROTOBUF_GENERATE_GRPC_CPP(
 add_executable (coordinat_viewer ${SRC} ${PROTO_CPP} ${GRPC_CPP})
 
 target_include_directories(
-    coordinat_viewer
-    PRIVATE
+    coordinat_viewer PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${MAGNUM_INCLUDE_DIR}
     ${CORRADE_INCLUDE_DIR}
@@ -150,3 +149,17 @@ else()
         DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Release/resources/
     )    
 endif()
+
+# Setup test project for grpc testing
+add_executable (test_stub test_stub_main.cpp ${PROTO_CPP} ${GRPC_CPP})
+target_include_directories(
+    test_stub PRIVATE
+    ${Protobuf_INCLUDE_DIRS}
+    ${CMAKE_BINARY_DIR}
+)
+
+target_link_libraries(
+    test_stub PRIVATE
+    ${Protobuf_LIBRARIES}
+    gRPC::grpc++_reflection
+)
