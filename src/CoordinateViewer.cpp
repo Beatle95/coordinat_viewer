@@ -1,12 +1,13 @@
 #include "CoordinateViewer.h"
 
-CoordinateViewerMain::CoordinateViewer::CoordinateViewer(const Arguments& arguments):
-    Platform::Application{arguments, 
+CoordinateViewerMain::CoordinateViewer::CoordinateViewer(const Arguments& arguments)
+    : Platform::Application{arguments, 
         Configuration{}
         .setTitle("Coordinat Viewer")
         .setSize(Vector2i{800, 800})
         .setWindowFlags(Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Resizable | 
-        Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Maximized)}
+        Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Maximized)},
+    mGrpcServer(&mCallPointsManager)
 {
     mImgui.init(this, windowSize(), dpiScaling(), framebufferSize());
 

@@ -85,6 +85,7 @@ private:
 
     BackgroundWorkManager mBackgroundManager;
     CallPointsManager mCallPointsManager;
+    GrpcServerImpl mGrpcServer;
 
     ImGuiImpl mImgui;
     GL::Mesh mEarthMesh, mPointMesh;
@@ -107,8 +108,6 @@ private:
     float mCameraVerticalAngle = Constants::pi() / 2;
     float mCameraDistance = 10.0f;
     std::chrono::steady_clock::time_point mMainLightTimestamp;
-
-    std::list<CallPoint> mPoints;
 };
 
 }
