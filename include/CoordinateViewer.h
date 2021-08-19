@@ -56,10 +56,10 @@ using namespace std::chrono_literals;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
-class CoordinateViewer: public Platform::Application 
+class Renderer: public Platform::Application 
 {
 public:
-    explicit CoordinateViewer(const Arguments& arguments);
+    explicit Renderer(const Arguments& arguments);
     friend class ::ImGuiImpl;
     friend class ::CallPointsManager;
 

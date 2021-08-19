@@ -2,6 +2,6 @@
 #include "CoordinateViewer.h"
 
 int main(int argc, char** argv) {
-    CoordinateViewerMain::CoordinateViewer app({argc, argv});
+    CoordinateViewerMain::Renderer app({argc, argv});
     return app.exec();
 }

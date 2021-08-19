@@ -1,6 +1,6 @@
 #include "CoordinateViewer.h"
 
-CoordinateViewerMain::CoordinateViewer::CoordinateViewer(const Arguments& arguments)
+CoordinateViewerMain::Renderer::Renderer(const Arguments& arguments)
     : Platform::Application{arguments, 
         Configuration{}
         .setTitle("Coordinat Viewer")
@@ -23,7 +23,7 @@ CoordinateViewerMain::CoordinateViewer::CoordinateViewer(const Arguments& argume
     setMinimalLoopPeriod(16);
 }
 
-void CoordinateViewerMain::CoordinateViewer::objectsInit() 
+void CoordinateViewerMain::Renderer::objectsInit() 
 {
     // set shader defaults
     mEarthShader
@@ -61,7 +61,7 @@ void CoordinateViewerMain::CoordinateViewer::objectsInit()
     mEarthObj->rotateX(-Rad(Constants::pi() / 2));
 }
 
-void CoordinateViewerMain::CoordinateViewer::loadResources() 
+void CoordinateViewerMain::Renderer::loadResources() 
 {
     PluginManager::Manager<Trade::AbstractImporter> manager;
     auto assimpImporter = manager.loadAndInstantiate("AssimpImporter");
@@ -107,7 +107,7 @@ void CoordinateViewerMain::CoordinateViewer::loadResources()
     mPointMesh = MeshTools::compile(*pointMeshData);
 }
 
-void CoordinateViewerMain::CoordinateViewer::drawEvent() 
+void CoordinateViewerMain::Renderer::drawEvent() 
 {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth);
 
@@ -125,31 +125,31 @@ void CoordinateViewerMain::CoordinateViewer::drawEvent()
     mCallPointsManager.addSessionsGuiThreadIfPossible(this);
 }
 
-void CoordinateViewerMain::CoordinateViewer::keyPressEvent(KeyEvent& event) 
+void CoordinateViewerMain::Renderer::keyPressEvent(KeyEvent& event) 
 {
     if (mImgui.keyPressEvent(event)) return;
 }
 
-void CoordinateViewerMain::CoordinateViewer::keyReleaseEvent(KeyEvent& event) 
+void CoordinateViewerMain::Renderer::keyReleaseEvent(KeyEvent& event) 
 {
     if (mImgui.keyReleaseEvent(event)) return;
 }
 
-void CoordinateViewerMain::CoordinateViewer::mousePressEvent(MouseEvent& event) 
+void CoordinateViewerMain::Renderer::mousePressEvent(MouseEvent& event) 
 {
     if (mImgui.mousePressEvent(event)) return;
     if (event.button() == MouseEvent::Button::Left)
         mPreviousPosition = event.position();
 }
 
-void CoordinateViewerMain::CoordinateViewer::mouseReleaseEvent(MouseEvent& event) 
+void CoordinateViewerMain::Renderer::mouseReleaseEvent(MouseEvent& event) 
 {
     if (mImgui.mouseReleaseEvent(event)) return;
     if (event.button() == MouseEvent::Button::Left)
         mPreviousPosition = Vector2i();
 }
 
-void CoordinateViewerMain::CoordinateViewer::mouseMoveEvent(MouseMoveEvent& event) 
+void CoordinateViewerMain::Renderer::mouseMoveEvent(MouseMoveEvent& event) 
 {
     if (mImgui.mouseMoveEvent(event)) return;
     if (!(event.buttons() & MouseMoveEvent::Button::Left)) return;
@@ -173,7 +173,7 @@ void CoordinateViewerMain::CoordinateViewer::mouseMoveEvent(MouseMoveEvent& even
     placeCamera();
 }
 
-void CoordinateViewerMain::CoordinateViewer::mouseScrollEvent(MouseScrollEvent& event) 
+void CoordinateViewerMain::Renderer::mouseScrollEvent(MouseScrollEvent& event) 
 {
     if (mImgui.mouseScrollEvent(event)) {
         event.setAccepted();
@@ -187,25 +187,25 @@ void CoordinateViewerMain::CoordinateViewer::mouseScrollEvent(MouseScrollEvent& 
     placeCamera();
 }
 
-void CoordinateViewerMain::CoordinateViewer::textInputEvent(TextInputEvent& event) 
+void CoordinateViewerMain::Renderer::textInputEvent(TextInputEvent& event) 
 {
     if (mImgui.textInputEvent(event)) return;
 }
 
-void CoordinateViewerMain::CoordinateViewer::viewportEvent(ViewportEvent& event) 
+void CoordinateViewerMain::Renderer::viewportEvent(ViewportEvent& event) 
 {    
     GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
     mCamera->setViewport(event.windowSize());
     mImgui.viewportEvent(event);
 }
 
-void CoordinateViewerMain::CoordinateViewer::placeCamera() 
+void CoordinateViewerMain::Renderer::placeCamera() 
 {
     auto pos = fromPolarCoordinates(mCameraHorizontalAngle, mCameraVerticalAngle, mCameraDistance);
     mCameraObject.setTransformation(Matrix4::lookAt(pos, Vector3{0.0f, 0.0f, 0.0f}, Vector3{0.0f, 1.0f, 0.0f}));
 }
 
-void CoordinateViewerMain::CoordinateViewer::placeLightTimeBased(const std::chrono::system_clock::time_point& time_point) 
+void CoordinateViewerMain::Renderer::placeLightTimeBased(const std::chrono::system_clock::time_point& time_point) 
 {
     time_t tt = std::chrono::system_clock::to_time_t(time_point);
     tm utc_time = *gmtime(&tt);
@@ -215,7 +215,7 @@ void CoordinateViewerMain::CoordinateViewer::placeLightTimeBased(const std::chro
     mSceneLightObj->translate(fromPolarCoordinates(-lightAngle, LIGHT_VERTICAL_ANGLE, LIGHT_DISTANCE));
 }
 
-Vector3 CoordinateViewerMain::CoordinateViewer::fromPolarCoordinates(const float phi_rad, const float theta_rad, const float r) 
+Vector3 CoordinateViewerMain::Renderer::fromPolarCoordinates(const float phi_rad, const float theta_rad, const float r) 
 {
     Vector3 pos;
     pos.x() = r * sin(theta_rad) * sin(phi_rad);
@@ -224,7 +224,7 @@ Vector3 CoordinateViewerMain::CoordinateViewer::fromPolarCoordinates(const float
     return pos;
 }
 
-float CoordinateViewerMain::CoordinateViewer::mapZeroBased(const float fromMax, const float toMax, const float value) 
+float CoordinateViewerMain::Renderer::mapZeroBased(const float fromMax, const float toMax, const float value) 
 {
     float result = 0.0f;
     result = value / fromMax * toMax;

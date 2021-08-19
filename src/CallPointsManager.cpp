@@ -28,7 +28,7 @@ void CallPointsManager::addSession(Session& session)
     }
 }
 
-void CallPointsManager::addSessionsGuiThreadIfPossible(CoordinateViewerMain::CoordinateViewer* guiObject) 
+void CallPointsManager::addSessionsGuiThreadIfPossible(CoordinateViewerMain::Renderer* guiObject) 
 {
     if (mHaveNewSessions.exchange(false)) {
         for (auto& sessionElem : mSessions) {

@@ -11,7 +11,7 @@
 #define SESSION_MAX_SIZE    150
 
 namespace CoordinateViewerMain {
-class CoordinateViewer;
+class Renderer;
 }
 
 enum class SessionStatus{
@@ -48,7 +48,7 @@ public:
     void stopEvent() override;
     // push session from GRPC server thread to sessions list
     void addSession(Session& session);
-    void addSessionsGuiThreadIfPossible(CoordinateViewerMain::CoordinateViewer* guiObject);
+    void addSessionsGuiThreadIfPossible(CoordinateViewerMain::Renderer* guiObject);
 
 private:
     // temporary storage for sessions, from here they are being pushed to mCallPoints by main thread
