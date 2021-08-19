@@ -53,7 +53,6 @@ public:
 private:
     // temporary storage for sessions, from here they are being pushed to mCallPoints by main thread
     std::vector<Session> mSessions;
-
     std::atomic<bool> mHaveNewSessions;
 };
 

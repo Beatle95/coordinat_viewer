@@ -33,7 +33,23 @@ void ImGuiImpl::draw()
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::Begin("Windows", nullptr);
     {
-        ImGui::Text("Empty");
+        ImGui::Text("Call points");
+
+        if (ImGui::BeginTable("Call Points", 5, ImGuiTableFlags_Borders | ImGuiTableColumnFlags_WidthStretch)) {
+            ImGui::TableSetupColumn("IMEI");
+            ImGui::TableSetupColumn("Number");
+            ImGui::TableSetupColumn("Latitude");
+            ImGui::TableSetupColumn("Longitude");
+            ImGui::TableSetupColumn("Actions");
+            ImGui::TableHeadersRow();
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("11122223333");
+            ImGui::TableNextColumn();
+            ImGui::Text("+7(911) 908-46-53");
+            ImGui::EndTable();
+        }
     }
     ImGui::End();
     /* Update application cursor */
