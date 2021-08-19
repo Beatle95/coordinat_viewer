@@ -5,9 +5,13 @@ CoordinateViewerMain::Renderer::Renderer(const Arguments& arguments)
         Configuration{}
         .setTitle("Coordinat Viewer")
         .setSize(Vector2i{800, 800})
-        .setWindowFlags(Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Resizable | 
-        Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Maximized)},
-    mGrpcServer(&mCallPointsManager)
+        .setWindowFlags(Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Resizable 
+        | Magnum::Platform::Sdl2Application::Configuration::WindowFlag::Maximized)},
+    mGrpcServer(&mCallPointsManager),
+    mEarthShader{ 
+        Shaders::PhongGL::Flag::DiffuseTexture 
+        | Shaders::PhongGL::Flag::AmbientTexture 
+        | Shaders::PhongGL::Flag::SpecularTexture}
 {
     mImgui.init(this, windowSize(), dpiScaling(), framebufferSize());
 

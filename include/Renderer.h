@@ -90,10 +90,7 @@ private:
     ImGuiImpl mImgui;
     GL::Mesh mEarthMesh, mPointMesh;
     GL::Texture2D mEarthTexture;
-    Shaders::PhongGL mEarthShader{
-        Shaders::PhongGL::Flag::DiffuseTexture 
-        | Shaders::PhongGL::Flag::AmbientTexture 
-        | Shaders::PhongGL::Flag::SpecularTexture};
+    Shaders::PhongGL mEarthShader;
     Shaders::PhongGL mColorShader;
 
     Scene3D mScene;
