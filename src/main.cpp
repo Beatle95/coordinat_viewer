@@ -1,5 +1,5 @@
 #include <iostream>
-#include "CoordinateViewer.h"
+#include "Renderer.h"
 
 int main(int argc, char** argv) {
     CoordinateViewerMain::Renderer app({argc, argv});

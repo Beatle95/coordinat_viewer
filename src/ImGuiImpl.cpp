@@ -1,5 +1,5 @@
 #include "ImGuiImpl.h"
-#include "CoordinateViewer.h"
+#include "Renderer.h"
 
 void ImGuiImpl::init(
     Platform::Application *application, 

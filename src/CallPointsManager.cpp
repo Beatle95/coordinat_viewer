@@ -1,5 +1,5 @@
 #include "CallPointsManager.h"
-#include "CoordinateViewer.h"
+#include "Renderer.h"
 
 void CallPointsManager::doWork() 
 {
